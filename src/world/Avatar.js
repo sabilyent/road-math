@@ -128,6 +128,22 @@ export class Avatar {
     this.rightArm.castShadow = true;
     this.torso.add(this.rightArm);
 
+    // Math Blaster / Pistol Matematik Kartun
+    const blasterGroup = new THREE.Group();
+    const gunBody = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.22, 0.42),
+      new THREE.MeshLambertMaterial({ color: 0x00E5FF })
+    );
+    const gunBarrel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.08, 0.22, 8),
+      new THREE.MeshLambertMaterial({ color: 0xFF9100 })
+    );
+    gunBarrel.rotation.x = Math.PI / 2;
+    gunBarrel.position.set(0, 0.04, 0.28);
+    blasterGroup.add(gunBody, gunBarrel);
+    blasterGroup.position.set(0, -0.85, 0.15);
+    this.rightArm.add(blasterGroup);
+
     // 5. Kaki Kiri (Left Leg)
     const legGeo = new THREE.BoxGeometry(0.38, 0.9, 0.4);
     legGeo.translate(0, -0.45, 0);
@@ -263,7 +279,7 @@ export class Avatar {
   }
 
   // Update animasi pergerakan setiap frame
-  update(delta, isMoving, isJumping, velocityY) {
+  update(delta, isMoving, isJumping, velocityY, isAiming = false) {
     this.animTime += delta * 8;
 
     // Putar kipas jika memakai topi kipas
@@ -274,7 +290,7 @@ export class Avatar {
     if (isJumping) {
       // Pose lompat gembira: tangan naik ke atas, kaki bengkok sedikit
       this.leftArm.rotation.x = -Math.PI * 0.7;
-      this.rightArm.rotation.x = -Math.PI * 0.7;
+      this.rightArm.rotation.x = isAiming ? -Math.PI * 0.45 : -Math.PI * 0.7;
       this.leftLeg.rotation.x = 0.35;
       this.rightLeg.rotation.x = 0.35;
       this.torso.position.y = 1.35;
@@ -289,7 +305,7 @@ export class Avatar {
       // Ayunan berjalan/berlari ceria Roblox
       const swing = Math.sin(this.animTime) * 0.75;
       this.leftArm.rotation.x = swing;
-      this.rightArm.rotation.x = -swing;
+      this.rightArm.rotation.x = isAiming ? -Math.PI * 0.45 : -swing;
       this.leftLeg.rotation.x = -swing * 0.85;
       this.rightLeg.rotation.x = swing * 0.85;
 
@@ -304,7 +320,7 @@ export class Avatar {
       const breath = Math.sin(this.animTime * 0.35) * 0.03;
       this.torso.position.y = 1.35 + breath;
       this.leftArm.rotation.x = THREE.MathUtils.lerp(this.leftArm.rotation.x, 0, 0.1);
-      this.rightArm.rotation.x = THREE.MathUtils.lerp(this.rightArm.rotation.x, 0, 0.1);
+      this.rightArm.rotation.x = isAiming ? -Math.PI * 0.45 : THREE.MathUtils.lerp(this.rightArm.rotation.x, 0, 0.1);
       this.leftLeg.rotation.x = THREE.MathUtils.lerp(this.leftLeg.rotation.x, 0, 0.1);
       this.rightLeg.rotation.x = THREE.MathUtils.lerp(this.rightLeg.rotation.x, 0, 0.1);
 

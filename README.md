@@ -4,9 +4,9 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Three.js](https://img.shields.io/badge/Three.js-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Mobile%20%7C%20Desktop-blue?style=for-the-badge)](https://sabilyent.github.io/road-math)
-[![Status](https://img.shields.io/badge/Status-MVP%20Development-orange?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-MVP%20Live-brightgreen?style=for-the-badge)](#)
 
-> **Road Math** (*Bijak Math: Math City Adventure*) ialah sebuah permainan 3D pendidikan berasaskan web (HTML5) yang direka khas untuk kanak-kanak (sekitar umur 4–7 tahun). Permainan ini menggabungkan penerokaan bandar secara santai ala dunia terbuka mini dengan cabaran matematik asas (tambah, tolak, darab, dan bahagi) secara interaktif dan adaptif.
+> **Road Math** (*Bijak Math: Math City Adventure*) ialah permainan 3D pendidikan berasaskan web (HTML5 & Three.js) bertaraf dunia yang direka khas untuk kanak-kanak (umur 4–7 tahun) dengan estetika comel ala **Roblox**. Permainan ini menggabungkan penerokaan bandar (*Math City*), pemburuan zombie kartun dengan pistol auto-aim, sistem dwi-ekonomi (**Point Ranking** & **Syiling Kedai**), penyesuaian fesyen avatar, dan sistem sesi pantas untuk berbilang pemain tanpa pendaftaran rumit!
 
 ---
 
@@ -20,17 +20,20 @@ Pemain boleh mengakses dan bermain permainan ini secara terus melalui pelayar we
 * ⚡ **Server 2 (Cermin / Domain Rasmi):**  
   👉 **[https://road-math.sabily.info](https://road-math.sabily.info)**
 
-> *Kedua-dua pelayan menyediakan binaan permainan terkini dan menyokong mod offline selepas aset pertama kali dimuatkan.*
+> *Kedua-dua pelayan menyediakan binaan permainan terkini dan menyokong mod luar talian (offline PWA) selepas lawatan kali pertama.*
 
 ---
 
 ## 🎯 Visi & Pengalaman Pemain
 
-Bukan sekadar kuiz di atas kertas, **Road Math** menjadikan matematik sebagai kunci utama pengembaraan:
-- **Belajar Sambil Meneroka:** Operasi matematik menjadi sebahagian daripada interaksi dunia (membuka pintu rahsia, membeli makanan, dan memenangi cabaran).
-- **Galakan Positif (Bukan Hukuman):** Kesilapan jawapan tidak mematikan watak; sebaliknya memberikan petunjuk visual dan peluang mencuba semula.
-- **Kanak-Kanak Mesra & Selamat:** Tiada keganasan, tiada iklan (ads), tiada transaksi wang sebenar, dan tiada ruang sembang terbuka (chat).
-- **Single-Player & Local-First:** Tiada pendaftaran akaun atau sambungan pelayan berterusan diperlukan. Kemajuan pemain disimpan secara selamat terus di dalam peranti.
+Bukan sekadar kuiz di atas kertas, **Road Math** menjadikan matematik sebagai pengembaraan penuh aksi santai:
+- **Zombie Berkeliaran Seluruh Bandar:** Zombie kartun comel berkeliaran di serata jalan raya, taman dan dataran bandar secara dinamik.
+- **Auto-Aim & Klik Sasaran:** Pistol blaster avatar membidik zombie terdekat secara automatik dengan reticle sasaran 🎯, atau pemain boleh klik/sentuh terus mana-mana zombie pada skrin!
+- **Tembak & Menghilang:** Selesai menjawab soalan matematik dengan tepat, laser ditembak, zombie mati/menghilang dengan letupan kartun, dan pemain dianugerahkan Point serta Syiling!
+- **Dwi-Ekonomi (Point vs Coin):**
+  - 🏆 **Point:** Mata skor khas untuk persaingan ranking dalam **Papan Ranking (Leaderboard)** tempatan.
+  - 🪙 **Coin (Syiling):** Mata wang untuk membeli makanan (*Speed Boost*, *Super Jump*) dan aksesori fesyen avatar.
+- **Sesi Selesa Berbilang Pemain (Login/Logout Pantas):** Tiada borang daftar rumit. Adik-beradik atau rakan sekelas hanya perlu menaip nama (*username*) untuk memulakan sesi dan menyimpan skor masing-masing.
 
 ---
 
@@ -38,47 +41,48 @@ Bukan sekadar kuiz di atas kertas, **Road Math** menjadikan matematik sebagai ku
 
 | Ciri | Penerangan |
 | :--- | :--- |
-| 🏙️ **Math City 3D** | Bandar 3D *low-poly* yang ceria merangkumi **Town Square**, **Food Street**, dan **Zombie Park**. |
-| ➕ **Sistem Matematik Adaptif** | Meliputi operasi Tambah (+), Tolak (-), Darab (×), dan Bahagi (÷) dengan tahap kesukaran yang melaras secara automatik mengikut prestasi pemain. |
-| 🧟 **Zombie Kartun Mesra** | Menghadapi zombie kartun yang comel. Apabila soalan dijawab betul, zombie akan bertukar menjadi syiling atau melarikan diri secara kelakar. |
-| 🪙 **Ekonomi Satu Mata Wang** | Mengumpul syiling hasil menyelesaikan cabaran untuk membeli makanan, minuman, dan kostum avatar di kedai. |
-| 📱 **Kawalan Dwi-Platform** | Sokongan penuh untuk **Desktop** (papan kekunci & tetikus) dan **Mobile/Tablet** (virtual joystick & butang sentuh pada skrin). |
-| 💾 **Offline-Ready & Auto-Save** | Simpanan automatik ke *Local Storage* / *IndexedDB*. Boleh dimainkan di mana-mana sahaja walaupun tiada sambungan internet. |
+| 🏙️ **Math City 3D** | Bandar 3D *low-poly* ceria merangkumi **Town Square**, kolam air pancut dengan syiling gergasi, **Food Street**, dan laluan berturap. |
+| 🧟 **Zombie Berkeliaran** | 8 watak zombie kartun waddle comel yang berkeliaran bebas di serata bandar mencari lawan matematik. |
+| 🎯 **Auto-Aim & Click-to-Aim** | Pistol automatik mengunci sasaran terdekat dengan reticle 🎯, atau klik terus pada zombie dalam dunia 3D untuk memulakan cabaran. |
+| 🏆 **Papan Ranking (Leaderboard)** | Paparan ranking tempatan dengan pingat 🥇, 🥈, 🥉 menyusun pemain berdasarkan jumlah Point tertinggi. |
+| 👤 **Sistem Sesi Pantas** | Log masuk/keluar serta-merta hanya menggunakan nama pengguna (*username*). Menyokong simpanan rekod berasingan bagi setiap pemain. |
+| ➕ **Sistem Matematik Adaptif** | Meliputi operasi Tambah (+), Tolak (-), Darab (×), dan Bahagi (÷) dengan bantuan visual emoji (🍎, 🌟, 🚗) untuk umur 4–7 tahun. |
+| 👕 **Almari Fesyen Roblox** | Ubah suai warna baju, seluar, tona kulit dan aksesori topi 3D (Topi Kipas Berputar, Mahkota Diraja 👑, Topi Parti 🥳, Telinga Kucing 🐱). |
+| 🍦 **Kedai Makanan & Kira Baki** | Gerai Aiskrim, Donut dan Burger yang melatih pengiraan baki wang tolak serta memberikan buff pergerakan laju. |
+| 💾 **Offline-Ready PWA** | Dilengkapi *Service Worker* dan *Web Manifest* untuk dimainkan tanpa sambungan internet. |
 
 ---
 
 ## 🎮 Kawalan Permainan (Controls)
 
 ### 💻 Komputer / Laptop (Desktop)
-| Tindakan | Kawalan Papan Kekunci |
+| Tindakan | Kawalan Papan Kekunci / Tetikus |
 | :--- | :--- |
 | **Bergerak** | Kekunci `W`, `A`, `S`, `D` atau Anak Panah (`↑`, `←`, `↓`, `→`) |
 | **Lompat (Jump)** | Bar Ruang (`Spacebar`) |
-| **Interaksi (Interact)** | Kekunci `E` atau `Enter` |
-| **Kawalan Kamera** | Tetikus / Sentuh & Seret |
+| **Bidik & Tembak Zombie** | Kekunci `F` (apabila sasaran 🎯 dikunci) ATAU **Klik terus pada Zombie** menggunakan tetikus |
+| **Interaksi Kedai / Pintu** | Kekunci `E` atau `Enter` |
+| **Pusing Kamera** | Klik & Seret tetikus di atas ruang kosong |
 
 ### 📱 Telefon Pintar / Tablet (Mobile)
 | Tindakan | Kawalan Skrin Sentuh |
 | :--- | :--- |
-| **Bergerak** | *Virtual Joystick* di bahagian kiri skrin |
-| **Lompat (Jump)** | Butang ikon Lompat di bahagian kanan skrin |
-| **Interaksi (Interact)** | Butang ikon Tindakan / Soalan apabila menghampiri objek |
-| **Pilihan Jawapan** | Pad nombor dan pilihan jawapan bersaiz besar mesra sentuhan |
+| **Bergerak** | *Virtual Joystick* analog di sebelah kiri bawah skrin |
+| **Lompat (Jump)** | Butang ikon Lompat (🦘) |
+| **Bidik & Tembak Zombie** | Butang Blaster (🔫) apabila sasaran terkunci ATAU **Sentuh terus Zombie** di skrin |
+| **Interaksi (Interact)** | Butang Tindakan (💬) |
+| **Pilihan Jawapan** | Butang nombor besar berwarna-warni mesra sentuhan |
 
 ---
 
 ## 🛠️ Teknologi & Seni Bina
 
-Projek ini dibangunkan berasaskan teknologi web standard tanpa pergantungan enjin berat:
-
 - **Enjin Paparan 3D:** [Three.js](https://threejs.org/) (WebGL)
-- **Bahasa Pembangunan:** HTML5, CSS3, JavaScript (ES6 Modules)
-- **Pengurusan Aset & Bina:** [Vite](https://vitejs.dev/)
-- **Seni Bina Sistem:**
-  - `MathEngine`: Menguruskan penjanaan soalan, pengesahan, dan aras kesukaran secara terpisah.
-  - `WorldScene` & `PlayerController`: Mengawal grafik, pergerakan watak, fizik ringkas, dan interaksi persekitaran.
-  - `SaveManager`: Menyimpan data profil, syiling, dan tahap kecekapan secara setempat.
-  - `Service Worker`: Menyediakan cache aset permainan untuk kegunaan luar talian (offline).
+- **Seni Bina Interaksi:** Raycaster 3D untuk pengesanan klik sasaran zombie
+- **Pengurusan Sesi & Save:** Local-First Storage dengan sokongan multi-profile dan migrasi data automatik
+- **Sintesis Audio:** Web Audio API (100% kod sintesis tanpa kebergantungan fail audio luar)
+- **Bundler & Build Tool:** [Vite](https://vitejs.dev/)
+- **Penerbitan Automatik:** GitHub Actions Workflow ke GitHub Pages
 
 ---
 
@@ -87,66 +91,43 @@ Projek ini dibangunkan berasaskan teknologi web standard tanpa pergantungan enji
 ```text
 road-math/
 ├── index.html              # Pintu masuk utama aplikasi
-├── package.json            # Konfigurasi dependensi dan skrip
+├── package.json            # Konfigurasi modul & skrip
 ├── vite.config.js          # Konfigurasi bundler Vite
-├── README.md               # Dokumentasi projek
-├── PRD.md                  # Spesifikasi keperluan produk terperinci
-├── idea.md                 # Konsep reka bentuk dan visi permainan
-├── Brainstorming.md        # Catatan perbincangan awal dan arkitektur
-├── public/                 # Aset statik
-│   ├── favicon.ico
-│   ├── manifest.json       # PWA manifest
-│   └── assets/
-│       ├── models/         # Model 3D (.gltf / .glb)
-│       ├── textures/       # Tekstur dan imej
-│       └── audio/          # Kesan bunyi & muzik latar
-└── src/                    # Kod sumber aplikasi
-    ├── main.js             # Skrip permulaan
-    ├── game/               # Logik dunia 3D & pemain
-    ├── systems/            # MathEngine, DifficultyManager, SaveManager
-    └── ui/                 # Paparan HUD, skrin cabaran & joystick
+├── README.md               # Dokumentasi rasmi projek
+├── PRD.md                  # Spesifikasi keperluan produk (dikemaskini)
+├── idea.md                 # Visi dan konsep reka bentuk asal
+├── .github/workflows/      # CI/CD GitHub Pages deployment
+├── public/                 # Aset statik, PWA manifest & Service Worker
+└── src/
+    ├── main.js             # Gelung utama, pengesanan klik raycast & auto-aim
+    ├── style.css           # Gaya antaramuka bertema Roblox moden
+    ├── core/               # MathEngine, SaveManager multi-session, AudioManager, InputManager
+    ├── world/              # WorldScene, Avatar 3D, Zombie roaming, TownSquare, FoodStreet
+    └── ui/                 # HUD, LoginModal, LeaderboardModal, MathModal, ShopModal, CustomizerModal
 ```
 
 ---
 
 ## 🚀 Pembangunan Tempatan (Local Development)
 
-Sekiranya anda ingin menjalankan atau menguji projek ini di komputer tempatan:
+```bash
+# 1. Klon repositori
+git clone https://github.com/sabilyent/road-math.git
+cd road-math
 
-1. **Klon Repositori:**
-   ```bash
-   git clone https://github.com/sabilyent/road-math.git
-   cd road-math
-   ```
+# 2. Pasang modul
+npm install
 
-2. **Pasang Dependensi:**
-   ```bash
-   npm install
-   ```
+# 3. Jalankan pelayan pembangunan tempatan
+npm run dev
 
-3. **Jalankan Pelayan Pembangunan (Dev Server):**
-   ```bash
-   npm run dev
-   ```
-   Buka pelayar anda di alamat yang dipaparkan (kebiasaannya `http://localhost:5173`).
-
-4. **Bina untuk Pengeluaran (Production Build):**
-   ```bash
-   npm run build
-   ```
-
----
-
-## 📚 Dokumen Berkaitan
-
-Untuk maklumat mendalam mengenai perancangan dan spesifikasi:
-- 📄 [PRD.md](file:///c:/Users/user/GitHub/road-math/PRD.md) — *Product Requirements Document* (Keperluan fungsi, formula matematik, dan kriteria penerimaan).
-- 💡 [idea.md](file:///c:/Users/user/GitHub/road-math/idea.md) — Konsep reka bentuk, pengalaman pemain, dan dunia *Math City*.
-- 🧠 [Brainstorming.md](file:///c:/Users/user/GitHub/road-math/Brainstorming.md) — Arkitektur modul dan cadangan fasa pembangunan.
+# 4. Bina untuk pengeluaran (Production Build)
+npm run build
+```
 
 ---
 
 ## 📄 Hak Cipta & Lesen
 
 Hak Cipta © 2026 **Sabily Enterprise (Sabilyent)**.  
-Diterbitkan untuk tujuan pendidikan dan pembelajaran kanak-kanak.
+Diterbitkan untuk tujuan pendidikan dan pembelajaran matematik kanak-kanak.

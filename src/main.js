@@ -10,6 +10,8 @@ import { ShopModal } from './ui/ShopModal.js';
 import { CustomizerModal } from './ui/CustomizerModal.js';
 import { SettingsModal } from './ui/SettingsModal.js';
 import { TouchControls } from './ui/TouchControls.js';
+import { LoginModal } from './ui/LoginModal.js';
+import { LeaderboardModal } from './ui/LeaderboardModal.js';
 
 class GameApp {
   constructor() {
@@ -27,18 +29,30 @@ class GameApp {
     // 3. Inisialisasi Modals & UI
     this.initUI();
 
-    // 4. Pasang Service Worker untuk Sokongan Luar Talian (Offline / PWA)
+    // 4. Pengesanan Klik / Tap Terus ke Zombie (Raycast Click-to-Aim)
+    this.setupZombieClickTargeting();
+
+    // 5. Pasang Service Worker untuk Sokongan Luar Talian (Offline / PWA)
     this.registerServiceWorker();
 
-    // 5. Mulakan Gelung Permainan (Game Loop)
+    // 6. Mulakan Gelung Permainan (Game Loop)
     this.lastTime = performance.now();
     this.elapsedTime = 0;
-    this.activeInteractable = null;
 
     requestAnimationFrame(this.gameLoop.bind(this));
   }
 
   initUI() {
+    // Login / Switch Player Modal
+    this.loginModal = new LoginModal(this.saveManager, this.audio, (newUser) => {
+      this.worldScene.avatar.updateCustomization(newUser.avatar);
+      this.hud.updateHUD();
+      this.hud.showToast(`Selamat Datang, ${newUser.username}! Sesi anda sedia 🎮`);
+    });
+
+    // Leaderboard Modal
+    this.leaderboardModal = new LeaderboardModal(this.saveManager, this.audio);
+
     // Customizer Modal
     this.customizerModal = new CustomizerModal(this.saveManager, this.audio, (newAvatar) => {
       this.worldScene.avatar.updateCustomization(newAvatar);
@@ -52,10 +66,11 @@ class GameApp {
         this.hud.showToast(`Aras Pembelajaran: Aras ${newLevel} ⭐`);
       },
       () => {
-        // Reset save
-        this.worldScene.avatar.updateCustomization(this.saveManager.data.player.avatar);
+        // Reset save profil semasa
+        this.saveManager.resetCurrentPlayer();
+        this.worldScene.avatar.updateCustomization(this.saveManager.user.avatar);
         this.hud.updateHUD();
-        this.hud.showToast('Permainan telah dimulakan semula!');
+        this.hud.showToast('Profil semasa telah dimulakan semula!');
       }
     );
 
@@ -64,7 +79,9 @@ class GameApp {
       this.saveManager,
       this.audio,
       () => this.customizerModal.show(),
-      () => this.settingsModal.show()
+      () => this.settingsModal.show(),
+      () => this.leaderboardModal.show(),
+      () => this.loginModal.show(true)
     );
 
     // Math Modal
@@ -81,6 +98,47 @@ class GameApp {
     this.touchControls = new TouchControls(this.inputManager, this.audio);
   }
 
+  // Pengesanan Klik / Sentuh Terus pada Zombie di skrin
+  setupZombieClickTargeting() {
+    let downX = 0;
+    let downY = 0;
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.tagName === 'CANVAS') {
+        downX = e.clientX;
+        downY = e.clientY;
+      }
+    });
+
+    window.addEventListener('pointerup', (e) => {
+      if (e.target.tagName !== 'CANVAS') return;
+
+      // Jika seretan tetikus terlalu jauh, anggap pusingan kamera, bukan klik sasaran
+      const dist = Math.hypot(e.clientX - downX, e.clientY - downY);
+      if (dist < 8) {
+        const clickedZombie = this.worldScene.getClickedZombie(e.clientX, e.clientY);
+        if (clickedZombie && !clickedZombie.isDefeated) {
+          // Kunci sasaran terus kepada zombie ini
+          this.worldScene.zombiePark.setTargetDirectly(clickedZombie);
+          this.audio.playCoin();
+          this.triggerZombieChallenge(clickedZombie);
+        }
+      }
+    });
+  }
+
+  // Lancarkan cabaran matematik untuk zombie yang disasarkan
+  triggerZombieChallenge(zombie) {
+    if (!zombie || zombie.isDefeated) return;
+    const question = this.mathEngine.generateQuestion(zombie.opType);
+    this.mathModal.show(question, {
+      type: 'zombie',
+      target: zombie,
+      title: `Tembak ${zombie.name}! 🎯🔫`,
+      icon: '🧟'
+    });
+  }
+
   // Pengendali Keputusan Cabaran Matematik
   handleMathResult(isCorrect, question, context) {
     this.saveManager.recordMathAnswer(question.operation, isCorrect);
@@ -89,22 +147,21 @@ class GameApp {
 
     if (context.type === 'zombie') {
       const zombie = context.target;
-      // 1. Tembak pancaran blaster laser dari avatar ke zombie
+      // 1. Tembak pancaran laser dari pistol avatar ke zombie
       this.worldScene.particleSystem.spawnBlasterBeam(this.worldScene.playerPos, zombie.group.position);
       this.audio.playBlaster();
 
-      // 2. Kalahkan zombie dengan letupan zarah & syiling
+      // 2. Kalahkan zombie: mati, berpusing dan hilang dengan letupan zarah & syiling
       setTimeout(() => {
         this.worldScene.zombiePark.defeatZombie(zombie);
-        this.worldScene.particleSystem.spawnVictoryBurst(zombie.group.position, 20);
+        this.worldScene.particleSystem.spawnVictoryBurst(zombie.group.position, 25);
         this.worldScene.particleSystem.spawnCoinBurst(zombie.group.position, 6);
         this.audio.playCoin();
 
-        const rewardCoins = 10;
-        this.saveManager.addCoins(rewardCoins);
+        // Ganjaran berasingan: Points untuk Ranking 🏆, Coins untuk Belanja 🪙!
         this.saveManager.recordZombieDefeated();
         this.hud.updateHUD();
-        this.hud.showToast(`🎉 Hebat! ${zombie.name} bertukar jadi syiling! +${rewardCoins} Syiling 🪙`);
+        this.hud.showToast(`🎯 Tembakan Tepat! ${zombie.name} mati! +20 Point (Ranking) 🏆 & +5 Syiling 🪙`);
       }, 300);
 
     } else if (context.type === 'door') {
@@ -113,11 +170,9 @@ class GameApp {
       this.worldScene.particleSystem.spawnVictoryBurst(door.pos, 35);
       this.audio.playCorrect();
 
-      const rewardCoins = 25;
-      this.saveManager.addCoins(rewardCoins);
       this.saveManager.recordDoorOpened(door.id);
       this.hud.updateHUD();
-      this.hud.showToast(`🚪 ${door.name} Terbuka! Harta karun diperoleh! +${rewardCoins} Syiling 🪙`);
+      this.hud.showToast(`🚪 ${door.name} Terbuka! Harta karun diperoleh! +50 Point 🏆 & +25 Syiling 🪙`);
     }
   }
 
@@ -129,7 +184,6 @@ class GameApp {
     this.hud.showBuff(`${item.name} Aktif!`, item.emoji);
     this.hud.showToast(`Mmm sedapnya! ${item.desc} 😋`);
 
-    // Tamat buff selepas 18 saat
     setTimeout(() => {
       this.hud.hideBuff();
     }, 18000);
@@ -152,22 +206,29 @@ class GameApp {
     this.lastTime = now;
     this.elapsedTime += delta;
 
-    const isModalOpen = this.mathModal.isOpen || this.shopModal.isOpen || this.customizerModal.isOpen || this.settingsModal.isOpen;
+    const isModalOpen = this.mathModal.isOpen || this.shopModal.isOpen || 
+                        this.customizerModal.isOpen || this.settingsModal.isOpen ||
+                        this.loginModal.isOpen || this.leaderboardModal.isOpen;
 
     // Jika modal terbuka, rehatkan pergerakan pemain
     if (!isModalOpen) {
-      this.worldScene.update(delta, this.inputManager, this.elapsedTime);
-      this.checkInteractions();
+      // Semak auto-aim untuk menentukan sama ada avatar dalam mod membidik
+      const playerPos = this.worldScene.playerPos;
+      const lockedZombie = this.worldScene.zombiePark.updateAutoAim(playerPos, 15.0);
+      const isAiming = lockedZombie !== null;
+
+      this.worldScene.update(delta, this.inputManager, this.elapsedTime, isAiming);
+      this.checkInteractions(lockedZombie);
     } else {
-      // Hanya kemaskini animasi dunia secara pasif
+      // Render secara pasif
       this.worldScene.renderer.render(this.worldScene.scene, this.worldScene.camera);
     }
 
     requestAnimationFrame(this.gameLoop.bind(this));
   }
 
-  // Semakan Interaksi dengan Objek Berdekatan
-  checkInteractions() {
+  // Semakan Interaksi dengan Objek Berdekatan & Auto-Aim Blaster
+  checkInteractions(lockedZombie) {
     const playerPos = this.worldScene.playerPos;
 
     // 1. Kutipan Syiling Bertaburan
@@ -181,21 +242,14 @@ class GameApp {
       this.hud.updateHUD();
     }
 
-    // 2. Semak Zombie Park
-    const closestZombie = this.worldScene.zombiePark.getClosestZombie(playerPos, 3.8);
-    if (closestZombie) {
-      this.hud.showPrompt(`Lawan ${closestZombie.name}! Tekan [F] atau Butang Blaster 🔫`, '🧟');
+    // 2. Semak Auto-Aim Pistol ke Zombie Berkeliaran
+    if (lockedZombie) {
+      this.hud.showPrompt(`🎯 Sasaran Terkunci: ${lockedZombie.name}! Tekan [F] atau Butang Blaster 🔫 (atau Klik Zombie)`, '🎯', true);
 
-      if (this.inputManager.consumeBlaster() || this.inputManager.consumeInteract()) {
-        const question = this.mathEngine.generateQuestion(closestZombie.opType);
-        this.mathModal.show(question, {
-          type: 'zombie',
-          target: closestZombie,
-          title: `Cabar ${closestZombie.name}! 🧟`,
-          icon: '🔫'
-        });
+      if (this.inputManager.consumeBlaster()) {
+        this.triggerZombieChallenge(lockedZombie);
+        return;
       }
-      return;
     }
 
     // 3. Semak Food Street Stalls
@@ -236,8 +290,10 @@ class GameApp {
       return;
     }
 
-    // Jika tiada apa-apa berdekatan, sembunyikan petunjuk
-    this.hud.hidePrompt();
+    // Jika tiada sasaran atau interaksi, sembunyikan petunjuk
+    if (!lockedZombie) {
+      this.hud.hidePrompt();
+    }
   }
 }
 

@@ -26,6 +26,10 @@ export class WorldScene {
     this.cameraYaw = 0; // Sudut pusingan horizontal
     this.cameraPitch = 0.28; // Sudut pusingan vertikal
 
+    // Raycaster untuk Klik ke Zombie (Click-to-Aim)
+    this.raycaster = new THREE.Raycaster();
+    this.mouseNDC = new THREE.Vector2();
+
     this.initThree();
     this.buildWorld();
     this.setupResize();
@@ -177,7 +181,7 @@ export class WorldScene {
     // Kemaskini posisi & orientasi avatar mesh
     this.avatar.group.position.copy(this.playerPos);
     this.avatar.group.rotation.y = this.playerRotation;
-    this.avatar.update(delta, isMoving, !this.isGrounded, this.playerVelocityY);
+    this.avatar.update(delta, isMoving, !this.isGrounded, this.playerVelocityY, isAiming);
 
     // 5. Kemaskini Kamera Third-Person licin mengekori avatar
     const camTarget = new THREE.Vector3(this.playerPos.x, this.playerPos.y + 1.3, this.playerPos.z);
@@ -197,4 +201,28 @@ export class WorldScene {
     // 7. Render babak
     this.renderer.render(this.scene, this.camera);
   }
+
+  // Dapatkan zombie yang diklik secara tepat menggunakan Raycaster
+  getClickedZombie(clientX, clientY) {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.mouseNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouseNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouseNDC, this.camera);
+
+    const hitTargets = [];
+    for (const z of this.zombiePark.zombies) {
+      if (!z.isDefeated) {
+        hitTargets.push(z.torso, z.head);
+      }
+    }
+
+    const intersects = this.raycaster.intersectObjects(hitTargets, false);
+    if (intersects.length > 0) {
+      const hitObj = intersects[0].object;
+      return hitObj.userData?.zombie || null;
+    }
+    return null;
+  }
 }
+

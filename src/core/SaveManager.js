@@ -1,35 +1,29 @@
-// SaveManager.js - Menguruskan penyimpanan data pemain secara tempatan (Local-First)
+// SaveManager.js - Menguruskan penyimpanan data pemain dan profil berbilang pengguna (Multi-session)
 
-const STORAGE_KEY = 'road_math_save_v1';
+const STORAGE_KEY = 'road_math_save_v2';
+const LEGACY_STORAGE_KEY = 'road_math_save_v1';
 
-const DEFAULT_SAVE = {
-  schemaVersion: 1,
-  settings: {
-    musicEnabled: true,
-    sfxEnabled: true,
-    controlMode: 'touch-or-keyboard',
-    graphicsQuality: 'high'
+const createDefaultProfile = (username = 'Hero') => ({
+  username: username,
+  coins: 50,  // Syiling untuk belanja di kedai makanan & kosmetik
+  points: 0,  // Mata skor untuk ranking / leaderboard
+  xp: 0,
+  level: 1,
+  avatar: {
+    skin: '#FFCC80',
+    shirt: '#0288D1',
+    pants: '#2E7D32',
+    hat: 'propeller',
+    hair: '#3E2723'
   },
-  player: {
-    coins: 50, // Permulaan 50 syiling untuk seronok berbelanja
-    xp: 0,
-    level: 1,
-    avatar: {
-      skin: '#FFCC80', // Peach/Tan
-      shirt: '#0288D1', // Cyan/Blue
-      pants: '#2E7D32', // Vibrant Green
-      hat: 'propeller', // propeller, crown, party, ears, none
-      hair: '#3E2723'
-    },
-    inventory: []
-  },
+  inventory: [],
   progress: {
     openedDoors: [],
     completedChallenges: 0,
     defeatedZombies: 0
   },
   mathProfile: {
-    level: 1, // 1 (4-5 thn), 2 (5-6 thn), 3 (6-7 thn)
+    level: 1,
     operations: {
       addition: { difficulty: 1, correct: 0, attempts: 0 },
       subtraction: { difficulty: 1, correct: 0, attempts: 0 },
@@ -37,105 +31,190 @@ const DEFAULT_SAVE = {
       division: { difficulty: 1, correct: 0, attempts: 0 }
     }
   }
-};
+});
 
 class SaveManager {
   constructor() {
-    this.data = this.load();
+    this.rawStore = this.loadAll();
+    // Tetapkan pengguna aktif semasa
+    this.currentUsername = this.rawStore.activeUser || 'Hero';
+    if (!this.rawStore.users[this.currentUsername]) {
+      this.rawStore.users[this.currentUsername] = createDefaultProfile(this.currentUsername);
+    }
   }
 
-  load() {
+  loadAll() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return JSON.parse(JSON.stringify(DEFAULT_SAVE));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.users && typeof parsed.users === 'object') {
+          return parsed;
+        }
       }
-      const parsed = JSON.parse(raw);
-      // Validasi ringkas
-      if (!parsed || typeof parsed !== 'object') {
-        return JSON.parse(JSON.stringify(DEFAULT_SAVE));
+
+      // Migrasi daripada versi 1 jika ada
+      const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (legacyRaw) {
+        const legacy = JSON.parse(legacyRaw);
+        const legacyUser = createDefaultProfile('Hero');
+        if (legacy.player) {
+          legacyUser.coins = legacy.player.coins || 50;
+          legacyUser.points = (legacy.player.xp || 0) * 5; // Convert legacy XP to initial points
+          legacyUser.level = legacy.player.level || 1;
+          legacyUser.avatar = { ...legacyUser.avatar, ...(legacy.player.avatar || {}) };
+        }
+        return {
+          activeUser: 'Hero',
+          users: { 'Hero': legacyUser }
+        };
       }
-      // Gabung dengan default sekiranya ada medan baharu
-      return {
-        ...DEFAULT_SAVE,
-        ...parsed,
-        settings: { ...DEFAULT_SAVE.settings, ...(parsed.settings || {}) },
-        player: {
-          ...DEFAULT_SAVE.player,
-          ...(parsed.player || {}),
-          avatar: { ...DEFAULT_SAVE.player.avatar, ...(parsed.player?.avatar || {}) }
-        },
-        progress: { ...DEFAULT_SAVE.progress, ...(parsed.progress || {}) },
-        mathProfile: { ...DEFAULT_SAVE.mathProfile, ...(parsed.mathProfile || {}) }
-      };
     } catch (e) {
-      console.warn('Gagal membaca save data:', e);
-      return JSON.parse(JSON.stringify(DEFAULT_SAVE));
+      console.warn('Gagal membaca data save:', e);
     }
+
+    return {
+      activeUser: 'Hero',
+      users: {
+        'Hero': createDefaultProfile('Hero')
+      }
+    };
   }
 
   save() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+      this.rawStore.activeUser = this.currentUsername;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.rawStore));
     } catch (e) {
       console.warn('Gagal menyimpan save data:', e);
     }
   }
 
-  addCoins(amount) {
-    if (amount <= 0) return;
-    this.data.player.coins += amount;
-    this.data.player.xp += amount * 2;
-    // Check level up
-    const newLevel = Math.floor(this.data.player.xp / 100) + 1;
-    if (newLevel > this.data.player.level) {
-      this.data.player.level = newLevel;
+  // Pengguna aktif sekarang
+  get user() {
+    if (!this.rawStore.users[this.currentUsername]) {
+      this.rawStore.users[this.currentUsername] = createDefaultProfile(this.currentUsername);
     }
-    this.save();
-    return this.data.player.coins;
+    return this.rawStore.users[this.currentUsername];
   }
 
+  // Kompatibiliti ke belakang untuk rujukan saveManager.data.player
+  get data() {
+    return {
+      player: this.user,
+      mathProfile: this.user.mathProfile,
+      progress: this.user.progress,
+      settings: {
+        musicEnabled: true,
+        sfxEnabled: true
+      }
+    };
+  }
+
+  // Login dengan hanya memasukkan username (tanpa password/register rumit)
+  login(username) {
+    const cleanName = (username || '').trim();
+    if (!cleanName) return false;
+
+    this.currentUsername = cleanName;
+    if (!this.rawStore.users[cleanName]) {
+      // Profil baharu dicipta secara automatik
+      this.rawStore.users[cleanName] = createDefaultProfile(cleanName);
+    }
+    this.rawStore.activeUser = cleanName;
+    this.save();
+    return true;
+  }
+
+  // Logout / Tamatkan sesi semasa
+  logout() {
+    // Apabila logout, kita simpan keadaan terakhir
+    this.save();
+  }
+
+  // Senarai ranking / leaderboard berasaskan Points
+  getLeaderboard() {
+    const list = Object.values(this.rawStore.users).map((u) => ({
+      username: u.username,
+      points: u.points || 0,
+      coins: u.coins || 0,
+      level: u.level || 1,
+      zombiesDefeated: u.progress?.defeatedZombies || 0
+    }));
+
+    // Susun daripada markah tertinggi ke terendah
+    list.sort((a, b) => b.points - a.points);
+    return list;
+  }
+
+  // Senarai semua username yang pernah bermain
+  getAllUsernames() {
+    return Object.keys(this.rawStore.users);
+  }
+
+  // Tambah Points (Mata Skor untuk Ranking)
+  addPoints(amount) {
+    if (amount <= 0) return 0;
+    this.user.points = (this.user.points || 0) + amount;
+    this.user.xp = (this.user.xp || 0) + amount;
+
+    // Semak kenaikan tahap (Level Up)
+    const newLevel = Math.floor(this.user.points / 100) + 1;
+    if (newLevel > this.user.level) {
+      this.user.level = newLevel;
+    }
+    this.save();
+    return this.user.points;
+  }
+
+  // Tambah Coins (Syiling untuk Belanja)
+  addCoins(amount) {
+    if (amount <= 0) return 0;
+    this.user.coins = (this.user.coins || 0) + amount;
+    this.save();
+    return this.user.coins;
+  }
+
+  // Belanja Coins
   spendCoins(amount) {
     if (amount <= 0) return false;
-    if (this.data.player.coins >= amount) {
-      this.data.player.coins -= amount;
+    if (this.user.coins >= amount) {
+      this.user.coins -= amount;
       this.save();
       return true;
     }
     return false;
   }
 
-  addInventory(item) {
-    this.data.player.inventory.push(item);
-    this.save();
-  }
-
   updateAvatar(avatarUpdates) {
-    this.data.player.avatar = { ...this.data.player.avatar, ...avatarUpdates };
+    this.user.avatar = { ...this.user.avatar, ...avatarUpdates };
     this.save();
   }
 
   recordDoorOpened(doorId) {
-    if (!this.data.progress.openedDoors.includes(doorId)) {
-      this.data.progress.openedDoors.push(doorId);
-      this.data.progress.completedChallenges++;
+    if (!this.user.progress.openedDoors.includes(doorId)) {
+      this.user.progress.openedDoors.push(doorId);
+      this.user.progress.completedChallenges++;
+      this.addPoints(50); // Mata skor tinggi untuk buka pintu rahsia!
+      this.addCoins(25);
       this.save();
     }
   }
 
   recordZombieDefeated() {
-    this.data.progress.defeatedZombies++;
-    this.data.progress.completedChallenges++;
+    this.user.progress.defeatedZombies++;
+    this.user.progress.completedChallenges++;
+    this.addPoints(20); // +20 Points untuk ranking!
+    this.addCoins(5);   // +5 Syiling untuk belanja!
     this.save();
   }
 
   recordMathAnswer(operation, isCorrect) {
-    const opData = this.data.mathProfile.operations[operation];
+    const opData = this.user.mathProfile.operations[operation];
     if (opData) {
       opData.attempts++;
       if (isCorrect) {
         opData.correct++;
-        // Adaptif: Jika prestasi cemerlang (cth 5 kali betul berturut), naikkan kesukaran
         if (opData.correct % 4 === 0 && opData.difficulty < 3) {
           opData.difficulty++;
         }
@@ -144,8 +223,8 @@ class SaveManager {
     this.save();
   }
 
-  reset() {
-    this.data = JSON.parse(JSON.stringify(DEFAULT_SAVE));
+  resetCurrentPlayer() {
+    this.rawStore.users[this.currentUsername] = createDefaultProfile(this.currentUsername);
     this.save();
   }
 }
