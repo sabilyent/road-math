@@ -22,7 +22,28 @@ export class HUD {
           <span class="user-avatar-icon">👤</span>
           <div class="user-text-col">
             <span id="hud-username-display" class="hud-username">Hero</span>
-            <small class="user-switch-hint">Tukar Sesi ↻</small>
+            <small class="user-switch-hint">Tukar ↻</small>
+          </div>
+        </div>
+
+        <!-- Health (❤️ Darah) & Power (⚡ Tenaga) Bars -->
+        <div class="hud-vitals-group">
+          <!-- Kesihatan (❤️ Health) -->
+          <div class="vital-bar-wrap vital-health-wrap" title="Darah / Kesihatan Hero">
+            <span class="vital-icon">❤️</span>
+            <div class="vital-track">
+              <div id="hud-health-fill" class="vital-fill vital-health-fill" style="width: 100%;"></div>
+              <span id="hud-health-text" class="vital-label-text">100</span>
+            </div>
+          </div>
+
+          <!-- Tenaga (⚡ Power / Stamina) -->
+          <div class="vital-bar-wrap vital-power-wrap" title="Tenaga Hero (Kurang bila banyak berjalan)">
+            <span class="vital-icon">⚡</span>
+            <div class="vital-track">
+              <div id="hud-power-fill" class="vital-fill vital-power-fill" style="width: 100%;"></div>
+              <span id="hud-power-text" class="vital-label-text">100</span>
+            </div>
           </div>
         </div>
 
@@ -31,19 +52,13 @@ export class HUD {
           <!-- Point (Ranking) -->
           <div class="hud-pill hud-points-pill" title="Mata Point untuk Ranking!">
             <span class="points-icon">🏆</span>
-            <div class="points-text-col">
-              <span id="hud-points-count" class="points-count">0</span>
-              <small class="points-label">Point</small>
-            </div>
+            <span id="hud-points-count" class="points-count">0</span>
           </div>
 
           <!-- Syiling (Kedai) -->
           <div class="hud-pill hud-coin-pill" title="Syiling untuk berbelanja di kedai!">
             <span class="coin-icon">🪙</span>
-            <div class="coins-text-col">
-              <span id="hud-coin-count" class="coin-count">0</span>
-              <small class="coins-label">Syiling</small>
-            </div>
+            <span id="hud-coin-count" class="coin-count">0</span>
           </div>
         </div>
 
@@ -58,10 +73,13 @@ export class HUD {
         </div>
       </div>
 
+      <!-- Flash Kerosakan Merah jika Digigit -->
+      <div id="hud-damage-flash" class="damage-flash-overlay hidden"></div>
+
       <!-- Notifikasi / Toast Maklum Balas -->
       <div id="hud-toast" class="hud-toast hidden"></div>
 
-      <!-- Petunjuk Interaksi Semasa / Auto-Aim Lockon -->
+      <!-- Petunjuk Interaksi Semasa / Auto-Aim Lockon (Kompak di bahagian atas skrin) -->
       <div id="hud-prompt" class="hud-prompt hidden">
         <div class="prompt-card" id="prompt-card">
           <span id="prompt-icon" class="prompt-icon">💬</span>
@@ -112,9 +130,52 @@ export class HUD {
 
   updateHUD() {
     const user = this.saveManager.user;
+    const health = this.saveManager.health;
+    const maxHealth = this.saveManager.maxHealth;
+    const power = this.saveManager.power;
+    const maxPower = this.saveManager.maxPower;
+
     document.getElementById('hud-username-display').textContent = user.username || 'Hero';
     document.getElementById('hud-points-count').textContent = user.points || 0;
     document.getElementById('hud-coin-count').textContent = user.coins || 0;
+
+    // Kemaskini Bar Kesihatan
+    const healthPct = Math.max(0, Math.min(100, (health / maxHealth) * 100));
+    const healthFill = document.getElementById('hud-health-fill');
+    const healthText = document.getElementById('hud-health-text');
+    if (healthFill && healthText) {
+      healthFill.style.width = `${healthPct}%`;
+      healthText.textContent = `${Math.round(health)}`;
+      if (healthPct <= 30) {
+        healthFill.classList.add('vital-low-pulse');
+      } else {
+        healthFill.classList.remove('vital-low-pulse');
+      }
+    }
+
+    // Kemaskini Bar Tenaga
+    const powerPct = Math.max(0, Math.min(100, (power / maxPower) * 100));
+    const powerFill = document.getElementById('hud-power-fill');
+    const powerText = document.getElementById('hud-power-text');
+    if (powerFill && powerText) {
+      powerFill.style.width = `${powerPct}%`;
+      powerText.textContent = `${Math.round(power)}`;
+      if (powerPct <= 20) {
+        powerFill.classList.add('vital-low-pulse');
+      } else {
+        powerFill.classList.remove('vital-low-pulse');
+      }
+    }
+  }
+
+  flashDamage() {
+    const flash = document.getElementById('hud-damage-flash');
+    if (!flash) return;
+    flash.classList.remove('hidden');
+    clearTimeout(this.damageTimeout);
+    this.damageTimeout = setTimeout(() => {
+      flash.classList.add('hidden');
+    }, 280);
   }
 
   showToast(message, duration = 2500) {

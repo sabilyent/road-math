@@ -113,7 +113,7 @@ export class WorldScene {
     }
   }
 
-  update(delta, inputManager, elapsedTime, isAiming = false) {
+  update(delta, inputManager, elapsedTime, isAiming = false, isExhausted = false) {
     // 1. Semak tamat masa buff makanan
     if (this.activeBuffTimer > 0) {
       this.activeBuffTimer -= delta;
@@ -144,7 +144,7 @@ export class WorldScene {
       const worldX = move.x * cosYaw - move.z * sinYaw;
       const worldZ = move.x * sinYaw + move.z * cosYaw;
 
-      const speed = this.baseSpeed * this.speedMultiplier * delta;
+      const speed = this.baseSpeed * this.speedMultiplier * (isExhausted ? 0.52 : 1.0) * delta;
       this.playerPos.x += worldX * speed;
       this.playerPos.z += worldZ * speed;
 
@@ -162,7 +162,8 @@ export class WorldScene {
     }
 
     // 4. Lompatan dan Graviti (Jump & Physics)
-    if (inputManager.isJumping && this.isGrounded) {
+    const canJump = !isExhausted;
+    if (inputManager.isJumping && this.isGrounded && canJump) {
       this.playerVelocityY = 7.5 * this.jumpMultiplier;
       this.isGrounded = false;
     }
@@ -192,14 +193,32 @@ export class WorldScene {
     this.camera.position.set(camX, camY, camZ);
     this.camera.lookAt(camTarget);
 
-    // 6. Kemaskini zon-zon dunia
+    // 6. Kemaskini zon-zon dunia & gigitan zombie
     this.townSquare.update(delta, elapsedTime);
     this.foodStreet.update(delta, elapsedTime);
-    this.zombiePark.update(delta, elapsedTime);
+    const bitingZombie = this.zombiePark.update(delta, elapsedTime, this.playerPos);
     this.particleSystem.update(delta);
 
     // 7. Render babak
     this.renderer.render(this.scene, this.camera);
+
+    // Semak sama ada berada dekat dengan air pancut (fountain heal)
+    const isNearFountain = this.playerPos.distanceTo(new THREE.Vector3(0, 0, 0)) < 4.2;
+
+    return {
+      bitingZombie,
+      isMoving,
+      isJumping: inputManager.isJumping && this.isGrounded,
+      isNearFountain
+    };
+  }
+
+  // Pulihkan pemain ke pusat air pancut (Respawn)
+  respawnAtFountain() {
+    this.playerPos.set(0, 0, 0);
+    this.playerVelocityY = 0;
+    this.isGrounded = true;
+    this.avatar.group.position.set(0, 0, 0);
   }
 
   // Dapatkan zombie yang diklik secara tepat menggunakan Raycaster

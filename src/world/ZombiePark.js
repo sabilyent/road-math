@@ -214,7 +214,8 @@ export class ZombiePark {
         speed: 1.2 + Math.random() * 0.8,
         targetPos: this.getRandomTownPoint(),
         pauseTimer: Math.random() * 2,
-        isWandering: true
+        isWandering: true,
+        biteCooldown: 0
       };
 
       // Simpan rujukan untuk Raycasting (Click to Aim)
@@ -296,8 +297,10 @@ export class ZombiePark {
     }
   }
 
-  // Kemaskini pergerakan berkeliaran di seluruh bandar
-  update(delta, time) {
+  // Kemaskini pergerakan berkeliaran di seluruh bandar & gigitan zombie jika dekat
+  update(delta, time, playerPos = null) {
+    let bitingZombie = null;
+
     for (const z of this.zombies) {
       if (z.isDefeated) {
         z.respawnTimer -= delta;
@@ -308,45 +311,82 @@ export class ZombiePark {
           z.targetPos = this.getRandomTownPoint();
           z.isDefeated = false;
           z.group.visible = true;
+          z.biteCooldown = 1.0;
         }
         continue;
       }
 
-      // Logik AI Berkeliaran (Roaming AI)
-      if (z.pauseTimer > 0) {
-        z.pauseTimer -= delta;
-        // Animasi bernafas / idle santai
-        const t = time * 2.5 + z.animOffset;
-        z.torso.rotation.z = Math.sin(t) * 0.05;
-        z.leftLeg.rotation.x = 0;
-        z.rightLeg.rotation.x = 0;
-      } else {
-        // Bergerak ke arah targetPos
-        const currentPos = z.group.position;
-        const dir = new THREE.Vector3().subVectors(z.targetPos, currentPos);
+      z.biteCooldown = Math.max(0, z.biteCooldown - delta);
+
+      // Semak jarak dengan pemain untuk logik Kejar & Gigit (Aggro & Bite)
+      let distToPlayer = 999;
+      if (playerPos) {
+        distToPlayer = z.group.position.distanceTo(playerPos);
+      }
+
+      // 1. ZOMBIE GIGIT PEMAIN (Jarak < 1.6 unit)
+      if (distToPlayer < 1.6 && z.biteCooldown <= 0) {
+        z.biteCooldown = 2.4; // Cooldown gigitan seterusnya
+        bitingZombie = z;
+
+        // Animasi melompat menggigit kartun
+        z.torso.position.y = 1.6;
+        setTimeout(() => { z.torso.position.y = 1.3; }, 250);
+      }
+
+      // 2. ZOMBIE MENGEJAR PEMAIN (Jarak < 8.5 unit)
+      if (distToPlayer < 8.5 && playerPos) {
+        // Bergerak ke arah pemain
+        const dir = new THREE.Vector3().subVectors(playerPos, z.group.position);
         dir.y = 0;
-        const distToTarget = dir.length();
+        dir.normalize();
 
-        if (distToTarget < 1.0) {
-          // Sampai destinasi, berehat seketika dan cari titik baru
-          z.pauseTimer = 1.5 + Math.random() * 2.5;
-          z.targetPos = this.getRandomTownPoint();
+        const chaseSpeed = 1.6 * delta;
+        z.group.position.addScaledVector(dir, chaseSpeed);
+
+        const targetAngle = Math.atan2(dir.x, dir.z);
+        z.group.rotation.y = THREE.MathUtils.lerp(z.group.rotation.y, targetAngle, 0.12);
+
+        // Animasi berjalan laju mengejar
+        const waddle = Math.sin(time * 8 + z.animOffset);
+        z.torso.rotation.z = waddle * 0.15;
+        z.leftLeg.rotation.x = waddle * 0.55;
+        z.rightLeg.rotation.x = -waddle * 0.55;
+        z.leftArm.rotation.x = -Math.PI * 0.45 + waddle * 0.3;
+        z.rightArm.rotation.x = -Math.PI * 0.45 - waddle * 0.3;
+
+      } else {
+        // 3. Logik AI Berkeliaran Santai (Roaming AI)
+        if (z.pauseTimer > 0) {
+          z.pauseTimer -= delta;
+          const t = time * 2.5 + z.animOffset;
+          z.torso.rotation.z = Math.sin(t) * 0.05;
+          z.leftLeg.rotation.x = 0;
+          z.rightLeg.rotation.x = 0;
         } else {
-          dir.normalize();
-          const moveSpeed = z.speed * delta;
-          currentPos.addScaledVector(dir, moveSpeed);
+          const currentPos = z.group.position;
+          const dir = new THREE.Vector3().subVectors(z.targetPos, currentPos);
+          dir.y = 0;
+          const distToTarget = dir.length();
 
-          // Pusingkan zombie menghadap arah pergerakan
-          const targetAngle = Math.atan2(dir.x, dir.z);
-          z.group.rotation.y = THREE.MathUtils.lerp(z.group.rotation.y, targetAngle, 0.1);
+          if (distToTarget < 1.0) {
+            z.pauseTimer = 1.5 + Math.random() * 2.5;
+            z.targetPos = this.getRandomTownPoint();
+          } else {
+            dir.normalize();
+            const moveSpeed = z.speed * delta;
+            currentPos.addScaledVector(dir, moveSpeed);
 
-          // Animasi berjalan terkedek-kedek kartun (Waddle walk)
-          const waddle = Math.sin(time * 6 + z.animOffset);
-          z.torso.rotation.z = waddle * 0.12;
-          z.leftLeg.rotation.x = waddle * 0.45;
-          z.rightLeg.rotation.x = -waddle * 0.45;
-          z.leftArm.rotation.x = -Math.PI * 0.45 + waddle * 0.2;
-          z.rightArm.rotation.x = -Math.PI * 0.45 - waddle * 0.2;
+            const targetAngle = Math.atan2(dir.x, dir.z);
+            z.group.rotation.y = THREE.MathUtils.lerp(z.group.rotation.y, targetAngle, 0.1);
+
+            const waddle = Math.sin(time * 6 + z.animOffset);
+            z.torso.rotation.z = waddle * 0.12;
+            z.leftLeg.rotation.x = waddle * 0.45;
+            z.rightLeg.rotation.x = -waddle * 0.45;
+            z.leftArm.rotation.x = -Math.PI * 0.45 + waddle * 0.2;
+            z.rightArm.rotation.x = -Math.PI * 0.45 - waddle * 0.2;
+          }
         }
       }
 
@@ -357,5 +397,7 @@ export class ZombiePark {
         z.iconSprite.position.y = 2.4 + Math.sin(time * 3 + z.animOffset) * 0.08;
       }
     }
+
+    return bitingZombie;
   }
 }

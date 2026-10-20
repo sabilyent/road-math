@@ -41,14 +41,18 @@ Bukan sekadar kuiz di atas kertas, **Road Math** menjadikan matematik sebagai pe
 
 | 📱 **PWA & Pasang Jadi Apps** | Boleh dipasang (*Installable App*) di telefon pintar (Android/iOS) dan desktop (Chrome/Edge/Safari) dengan ikon khas serta sokongan luar talian (*Offline*). |
 | 🔄 **Paksa Mod Melintang (Force Landscape)** | Dilengkapi sekatan orientasi pintar dengan animasi putaran peranti untuk menjamin kawalan terbaik kanak-kanak tanpa herotan skrin tegak. |
+| 📐 **UI Mesra Mobile & Kad Matematik Kompak** | Saiz tetingkap matematik dan bar maklumat dioptimumkan khas untuk skrin melintang telefon (tinggi <= 450px) agar tidak memotong butang pilihan atau menghalang avatar pemain. |
+| ❤️ **Sistem Darah (Health) & Gigitan Zombie** | Kesihatan hero (100 HP). Berhati-hati dengan zombie yang mengejar dan menggigit (-15 HP)! Jika darah habis, pemain akan pingsan dan muncul semula di kolam air pancut. |
+| ⚡ **Sistem Tenaga (Power / Stamina)** | Berjalan atau berlari berterusan menggunakan tenaga. Jika tenaga sifar (0⚡), hero berasa letih dan kelajuan pergerakan berkurangan sebanyak 50%! |
+| 🥥 **Gerai Makanan & Minuman Segar** | Pulihkan Darah ❤️ dan Tenaga ⚡ dengan membeli hidangan lazat di Food Street menggunakan syiling: Air Kelapa Segar 🥥, Aiskrim 🍦, Donut 🍩, dan Burger 🍔. |
+| ⛲ **Kolam Air Pancut (Rehat & Pulih Percuma)** | Berdiri dekat dengan air pancut di Town Square untuk memulihkan kesihatan (+10 HP/s) dan tenaga (+15 Power/s) secara percuma. |
 | 🏙️ **Math City 3D** | Bandar 3D *low-poly* ceria merangkumi **Town Square**, kolam air pancut dengan syiling gergasi, **Food Street**, dan laluan berturap. |
-| 🧟 **Zombie Berkeliaran** | 8 watak zombie kartun waddle comel yang berkeliaran bebas di serata bandar mencari lawan matematik. |
+| 🧟 **Zombie Berkeliaran Seluruh Bandar** | Watak zombie kartun waddle comel yang berkeliaran bebas di serata bandar mencari lawan matematik dengan sistem kejar (aggro) dan gigitan. |
 | 🎯 **Auto-Aim & Click-to-Aim** | Pistol automatik mengunci sasaran terdekat dengan reticle 🎯, atau klik terus pada zombie dalam dunia 3D untuk memulakan cabaran. |
 | 🏆 **Papan Ranking (Leaderboard)** | Paparan ranking tempatan dengan pingat 🥇, 🥈, 🥉 menyusun pemain berdasarkan jumlah Point tertinggi. |
 | 👤 **Sistem Sesi Pantas** | Log masuk/keluar serta-merta hanya menggunakan nama pengguna (*username*). Menyokong simpanan rekod berasingan bagi setiap pemain. |
 | ➕ **Sistem Matematik Adaptif** | Meliputi operasi Tambah (+), Tolak (-), Darab (×), dan Bahagi (÷) dengan bantuan visual emoji (🍎, 🌟, 🚗) untuk umur 4–7 tahun. |
 | 👕 **Almari Fesyen Roblox** | Ubah suai warna baju, seluar, tona kulit dan aksesori topi 3D (Topi Kipas Berputar, Mahkota Diraja 👑, Topi Parti 🥳, Telinga Kucing 🐱). |
-| 🍦 **Kedai Makanan & Kira Baki** | Gerai Aiskrim, Donut dan Burger yang melatih pengiraan baki wang tolak serta memberikan buff pergerakan laju. |
 | 💾 **Offline-Ready PWA** | Dilengkapi *Service Worker* dan *Web Manifest* untuk dimainkan tanpa sambungan internet. |
 
 ---

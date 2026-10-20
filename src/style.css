@@ -88,48 +88,140 @@ canvas {
   border: 2px solid #ECEFF1;
 }
 
-.hud-level-pill {
-  gap: 10px;
+.hud-user-pill {
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
 }
 
-.level-icon {
-  font-size: 1.6rem;
+.hud-user-pill:hover {
+  transform: translateY(-2px);
 }
 
-.level-info {
+.user-avatar-icon {
+  font-size: 1.4rem;
+}
+
+.user-text-col {
   display: flex;
   flex-direction: column;
+  line-height: 1.1;
 }
 
-.level-title {
-  font-size: 0.9rem;
-  color: #37474F;
+.hud-username {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1565C0;
 }
 
-.xp-bar-bg {
-  width: 80px;
-  height: 8px;
+.user-switch-hint {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #78909C;
+}
+
+/* ==========================================================================
+   VITALS BARS (HEALTH & POWER)
+   ========================================================================== */
+.hud-vitals-group {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 2px solid #ECEFF1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 0 #CFD8DC;
+}
+
+.vital-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vital-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+
+.vital-track {
+  position: relative;
+  width: 82px;
+  height: 11px;
   background: #ECEFF1;
-  border-radius: 4px;
+  border-radius: 999px;
   overflow: hidden;
-  margin-top: 2px;
+  border: 1px solid #CFD8DC;
 }
 
-.xp-bar-fill {
+.vital-fill {
   height: 100%;
-  background: linear-gradient(90deg, #FFB300, #FFD54F);
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  border-radius: 999px;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.vital-health-fill {
+  background: linear-gradient(90deg, #F44336, #FF5252);
+  box-shadow: 0 0 6px rgba(244, 67, 54, 0.35);
+}
+
+.vital-power-fill {
+  background: linear-gradient(90deg, #FF9800, #FFC107);
+  box-shadow: 0 0 6px rgba(255, 152, 0, 0.35);
+}
+
+.vital-label-text {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #263238;
+  line-height: 1;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.vital-low-pulse {
+  animation: vitalPulse 0.8s infinite ease-in-out;
+}
+
+@keyframes vitalPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(244, 67, 54, 0.5)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 6px rgba(244, 67, 54, 0.9)); }
+}
+
+/* ==========================================================================
+   STATS GROUP (POINTS & COINS)
+   ========================================================================== */
+.hud-stats-group {
+  display: flex;
+  gap: 8px;
+}
+
+.hud-points-pill {
+  gap: 6px;
+  color: #1565C0;
+  font-size: 1.15rem;
+}
+
+.points-icon {
+  font-size: 1.35rem;
+  filter: drop-shadow(0 2px 4px rgba(33, 150, 243, 0.3));
 }
 
 .hud-coin-pill {
-  gap: 8px;
+  gap: 6px;
   color: #E65100;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
 }
 
 .coin-icon {
-  font-size: 1.7rem;
+  font-size: 1.35rem;
   filter: drop-shadow(0 2px 4px rgba(255, 179, 0, 0.4));
   animation: coinBob 2s infinite ease-in-out;
 }
@@ -149,9 +241,9 @@ canvas {
   background: #FFFFFF;
   border: 2px solid #CFD8DC;
   border-radius: 50%;
-  width: 46px;
-  height: 46px;
-  font-size: 1.4rem;
+  width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -170,77 +262,108 @@ canvas {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
+/* Flash Kerosakan Merah jika Digigit Zombie */
+.damage-flash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(255, 0, 0, 0) 35%, rgba(220, 20, 60, 0.5) 100%);
+  border: 4px solid rgba(255, 20, 60, 0.7);
+  box-sizing: border-box;
+  z-index: 95;
+  animation: flashFaint 0.35s ease-out forwards;
+}
+
+@keyframes flashFaint {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Toast Notifikasi */
 .hud-toast {
   position: absolute;
-  top: 80px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #FF6F00, #FFA000);
   color: #FFFFFF;
-  padding: 12px 24px;
+  padding: 8px 20px;
   border-radius: 999px;
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  box-shadow: 0 8px 24px rgba(255, 111, 0, 0.35), 0 4px 0 #E65100;
+  box-shadow: 0 6px 18px rgba(255, 111, 0, 0.3), 0 3px 0 #E65100;
   border: 2px solid #FFE082;
   text-align: center;
   transition: opacity 0.3s ease;
   pointer-events: auto;
+  z-index: 20;
 }
 
-/* Petunjuk Interaksi */
+/* Petunjuk Interaksi / Aim Lockon (Slim, di bahagian atas skrin agar tidak menghalang watak / musuh) */
 .hud-prompt {
   position: absolute;
-  bottom: 120px;
+  top: 64px;
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: auto;
+  pointer-events: none;
+  z-index: 15;
+  width: auto;
+  max-width: 90vw;
 }
 
 .prompt-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 10px 22px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  padding: 5px 16px;
   border-radius: 999px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 4px 0 #90CAF9;
-  border: 2px solid #64B5F6;
-  animation: promptPulse 1.8s infinite ease-in-out;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15), 0 2px 0 #90CAF9;
+  border: 1.5px solid #64B5F6;
+  animation: promptPulse 2s infinite ease-in-out;
 }
 
 @keyframes promptPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  50% { transform: scale(1.02); }
 }
 
 .prompt-icon {
-  font-size: 1.6rem;
+  font-size: 1.15rem;
+  line-height: 1;
 }
 
 .prompt-text {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 0.88rem;
   color: #0D47A1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 440px;
 }
 
 /* Buff Banner */
 .hud-buff {
   position: absolute;
-  top: 82px;
+  top: 66px;
   left: 20px;
   background: rgba(255, 255, 255, 0.9);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 999px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 700;
+  font-size: 0.88rem;
   color: #E91E63;
   border: 2px solid #F48FB1;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 14;
 }
 
 /* ==========================================================================
@@ -299,82 +422,84 @@ canvas {
 .math-card {
   position: relative;
   background: #FFFFFF;
-  border-radius: 28px;
+  border-radius: 24px;
   width: 100%;
-  max-width: 520px;
-  padding: 28px 24px 24px;
+  max-width: 480px;
+  padding: 18px 22px 18px;
   text-align: center;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25), 0 8px 0 #B0BEC5;
-  border: 4px solid #ECEFF1;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), 0 6px 0 #B0BEC5;
+  border: 3px solid #ECEFF1;
+  max-height: 94vh;
+  overflow-y: auto;
 }
 
 .math-modal-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .math-header-icon {
-  font-size: 2.2rem;
+  font-size: 1.6rem;
 }
 
 .math-header-title {
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: #1565C0;
 }
 
 .math-formula-box {
   background: #E3F2FD;
-  border-radius: 20px;
-  padding: 16px 20px;
-  border: 3px dashed #64B5F6;
-  margin-bottom: 12px;
+  border-radius: 16px;
+  padding: 10px 16px;
+  border: 2px dashed #64B5F6;
+  margin-bottom: 8px;
 }
 
 .math-formula-text {
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: #0D47A1;
   letter-spacing: 2px;
 }
 
 .math-visual-aid {
-  font-size: 1.45rem;
-  min-height: 42px;
+  font-size: 1.25rem;
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #37474F;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   background: #FFF9C4;
-  border-radius: 14px;
-  padding: 8px 14px;
+  border-radius: 12px;
+  padding: 6px 12px;
   border: 2px solid #FFE082;
 }
 
 .math-feedback-msg {
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 0.92rem;
   color: #546E7A;
-  margin-bottom: 16px;
-  min-height: 28px;
+  margin-bottom: 10px;
+  min-height: 20px;
 }
 
 /* Choices Grid */
 .math-choices-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 10px;
 }
 
 .choice-btn {
   background: #FFFFFF;
-  border-radius: 20px;
-  padding: 16px 12px;
-  font-size: 2.4rem;
+  border-radius: 16px;
+  padding: 12px 8px;
+  font-size: 1.85rem;
   font-weight: 800;
   cursor: pointer;
   border: 3px solid;
@@ -1316,5 +1441,226 @@ canvas {
 .btn-fullscreen-landscape:active {
   transform: translateY(4px);
   box-shadow: 0 2px 0 #E65100;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN: MOBILE LANDSCAPE & SMALL HEIGHT DEVICES (<= 520px)
+   ========================================================================== */
+@media (max-height: 520px) {
+  /* HUD Top Bar */
+  .hud-top-bar {
+    padding: 4px 10px;
+    gap: 6px;
+  }
+
+  .hud-pill {
+    padding: 3px 8px;
+    font-size: 0.82rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 1.5px 0 #CFD8DC;
+    border-width: 1.5px;
+  }
+
+  .hud-user-pill {
+    gap: 5px;
+  }
+
+  .user-avatar-icon {
+    font-size: 1rem;
+  }
+
+  .hud-username {
+    font-size: 0.82rem;
+  }
+
+  .user-switch-hint {
+    font-size: 0.6rem;
+  }
+
+  .hud-vitals-group {
+    padding: 3px 8px;
+    gap: 2px;
+    border-radius: 12px;
+    border-width: 1.5px;
+  }
+
+  .vital-track {
+    width: 62px;
+    height: 9px;
+  }
+
+  .vital-icon {
+    font-size: 0.78rem;
+  }
+
+  .vital-label-text {
+    font-size: 0.55rem;
+    right: 3px;
+  }
+
+  .points-icon, .coin-icon {
+    font-size: 1.05rem;
+  }
+
+  .hud-actions-pill {
+    gap: 4px;
+  }
+
+  .hud-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+    border-width: 1.5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1), 0 1.5px 0 #B0BEC5;
+  }
+
+  .hud-toast {
+    top: 48px;
+    padding: 3px 12px;
+    font-size: 0.75rem;
+    max-width: 82vw;
+    box-shadow: 0 3px 10px rgba(255, 111, 0, 0.3);
+  }
+
+  .hud-prompt {
+    top: 48px;
+  }
+
+  .prompt-card {
+    padding: 3px 12px;
+    font-size: 0.78rem;
+  }
+
+  .prompt-icon {
+    font-size: 0.95rem;
+  }
+
+  .prompt-text {
+    font-size: 0.75rem;
+    max-width: 300px;
+  }
+
+  .hud-buff {
+    top: 48px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+  }
+
+  /* Math Modal Ultra-Compact Scaling */
+  .modal-backdrop {
+    padding: 4px;
+  }
+
+  .math-card {
+    padding: 6px 14px 8px;
+    max-width: 440px;
+    max-height: 96vh;
+    border-radius: 16px;
+    border-width: 2px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 0 #B0BEC5;
+  }
+
+  .modal-close-btn {
+    top: 5px;
+    right: 5px;
+    width: 26px;
+    height: 26px;
+    font-size: 0.85rem;
+  }
+
+  .math-modal-header {
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+
+  .math-header-icon {
+    font-size: 1.15rem;
+  }
+
+  .math-header-title {
+    font-size: 0.95rem;
+  }
+
+  .math-formula-box {
+    padding: 4px 10px;
+    margin-bottom: 3px;
+    border-radius: 10px;
+    border-width: 1.5px;
+  }
+
+  .math-formula-text {
+    font-size: 1.45rem;
+    letter-spacing: 1px;
+  }
+
+  .math-visual-aid {
+    font-size: 0.88rem;
+    min-height: 22px;
+    padding: 2px 6px;
+    margin-bottom: 3px;
+    border-radius: 8px;
+  }
+
+  .math-feedback-msg {
+    font-size: 0.72rem;
+    margin-bottom: 3px;
+    min-height: 14px;
+  }
+
+  .math-choices-grid {
+    gap: 6px;
+  }
+
+  .choice-btn {
+    padding: 5px 4px;
+    font-size: 1.25rem;
+    border-radius: 10px;
+    border-width: 2px;
+    box-shadow: 0 3px 0 !important;
+  }
+
+  /* Kedai, Almari, Tetapan & Leaderboard Modals */
+  .shop-card, .customizer-card, .settings-card, .leaderboard-card, .user-login-card {
+    max-height: 94vh;
+    padding: 8px 12px;
+    border-radius: 16px;
+    border-width: 2px;
+  }
+
+  .shop-header, .cust-header, .settings-header, .lead-header, .user-login-header {
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+
+  .shop-title, .cust-title, .settings-title, .lead-title, .login-title {
+    font-size: 1.05rem;
+  }
+
+  .shop-items-grid {
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .shop-item {
+    padding: 6px;
+    border-radius: 12px;
+  }
+
+  .shop-item-icon {
+    font-size: 1.6rem;
+  }
+
+  .shop-item-name {
+    font-size: 0.82rem;
+  }
+
+  .shop-item-desc {
+    font-size: 0.68rem;
+  }
+
+  .shop-buy-btn {
+    padding: 5px 8px;
+    font-size: 0.78rem;
+    border-radius: 10px;
+  }
 }
 

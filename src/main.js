@@ -179,13 +179,19 @@ class GameApp {
     }
   }
 
-  // Pengendali Pembelian Makanan di Kedai
+  // Pengendali Pembelian Makanan & Minuman di Kedai
   handleItemPurchased(item) {
+    const healHp = item.health || 25;
+    const healPw = item.power || 40;
+    this.saveManager.restoreHealth(healHp);
+    this.saveManager.restorePower(healPw);
+    this.audio.playEat();
+
     this.worldScene.applyFoodBuff(item.buff, 18.0);
     this.worldScene.particleSystem.spawnVictoryBurst(this.worldScene.playerPos, 15);
     this.hud.updateHUD();
     this.hud.showBuff(`${item.name} Aktif!`, item.emoji);
-    this.hud.showToast(`Mmm sedapnya! ${item.desc} 😋`);
+    this.hud.showToast(`😋 Sedapnya ${item.name}! +${healPw} Tenaga ⚡ & +${healHp} Darah ❤️!`);
 
     setTimeout(() => {
       this.hud.hideBuff();
@@ -314,8 +320,32 @@ class GameApp {
       const playerPos = this.worldScene.playerPos;
       const lockedZombie = this.worldScene.zombiePark.updateAutoAim(playerPos, 15.0);
       const isAiming = lockedZombie !== null;
+      const isExhausted = this.saveManager.power <= 0;
 
-      this.worldScene.update(delta, this.inputManager, this.elapsedTime, isAiming);
+      const updateResult = this.worldScene.update(delta, this.inputManager, this.elapsedTime, isAiming, isExhausted);
+
+      // 1. Logik Gigitan Zombie
+      if (updateResult && updateResult.bitingZombie) {
+        this.handleZombieBite(updateResult.bitingZombie);
+      }
+
+      // 2. Pemulihan automatik di Air Pancut (Fountain of Health & Power)
+      if (updateResult && updateResult.isNearFountain) {
+        this.saveManager.restoreHealth(delta * 10.0);
+        this.saveManager.restorePower(delta * 15.0);
+        this.hud.updateHUD();
+      }
+
+      // 3. Pengurangan / Pemulihan Tenaga Berjalan
+      if (updateResult && updateResult.isMoving) {
+        this.saveManager.consumePower(delta * 2.2);
+        this.hud.updateHUD();
+      } else {
+        // Berehat secara santai memulihkan sedikit tenaga
+        this.saveManager.restorePower(delta * 1.5);
+        this.hud.updateHUD();
+      }
+
       this.checkInteractions(lockedZombie);
     } else {
       // Render secara pasif
@@ -323,6 +353,26 @@ class GameApp {
     }
 
     requestAnimationFrame(this.gameLoop.bind(this));
+  }
+
+  // Pengendali Serangan Gigitan Zombie
+  handleZombieBite(zombie) {
+    this.saveManager.damageHealth(15);
+    this.audio.playHurt();
+    this.worldScene.avatar.flashHurt();
+    this.hud.flashDamage();
+    this.hud.updateHUD();
+
+    if (this.saveManager.health <= 0) {
+      // Hero Pengsan & Pulih di Air Pancut
+      this.audio.playDefeat();
+      this.worldScene.respawnAtFountain();
+      this.saveManager.restoreFull();
+      this.hud.updateHUD();
+      this.hud.showToast('😵 Hero pengsan digigit zombie! Anda pulih di Air Pancut ❤️⚡', 3500);
+    } else {
+      this.hud.showToast(`⚠️ ${zombie.name} gigit anda! -15 Darah ❤️ (Baki: ${Math.round(this.saveManager.health)}%)`, 1800);
+    }
   }
 
   // Semakan Interaksi dengan Objek Berdekatan & Auto-Aim Blaster
@@ -340,9 +390,9 @@ class GameApp {
       this.hud.updateHUD();
     }
 
-    // 2. Semak Auto-Aim Pistol ke Zombie Berkeliaran
+    // 2. Semak Auto-Aim Pistol ke Zombie Berkeliaran (Prompt Ramping & Tidak Mengganggu)
     if (lockedZombie) {
-      this.hud.showPrompt(`🎯 Sasaran Terkunci: ${lockedZombie.name}! Tekan [F] atau Butang Blaster 🔫 (atau Klik Zombie)`, '🎯', true);
+      this.hud.showPrompt(`🎯 Sasaran: ${lockedZombie.name}! Tekan [F] / 🔫 Blaster (atau Tap Zombie)`, '🎯', true);
 
       if (this.inputManager.consumeBlaster()) {
         this.triggerZombieChallenge(lockedZombie);
@@ -350,10 +400,10 @@ class GameApp {
       }
     }
 
-    // 3. Semak Food Street Stalls
+    // 3. Semak Food Street Stalls (Makanan & Minuman)
     const closestStall = this.worldScene.foodStreet.getClosestStall(playerPos, 3.5);
     if (closestStall) {
-      this.hud.showPrompt(`Beli di ${closestStall.name}! Tekan [E] atau Butang Tindakan 💬`, closestStall.item.emoji);
+      this.hud.showPrompt(`Beli di ${closestStall.name}! Tekan [E] / 💬`, closestStall.item.emoji);
 
       if (this.inputManager.consumeInteract()) {
         this.shopModal.show(closestStall);
@@ -364,7 +414,7 @@ class GameApp {
     // 4. Semak Pintu Rahsia Matematik (Math Doors)
     const closestDoor = this.worldScene.townSquare.getClosestDoor(playerPos, 3.2);
     if (closestDoor && !closestDoor.isOpen) {
-      this.hud.showPrompt(`Buka ${closestDoor.name}! Tekan [E] atau Butang Tindakan 💬`, '🚪');
+      this.hud.showPrompt(`Buka ${closestDoor.name}! Tekan [E] / 💬`, '🚪');
 
       if (this.inputManager.consumeInteract()) {
         const question = this.mathEngine.generateQuestion(closestDoor.operation, 2);
@@ -380,7 +430,7 @@ class GameApp {
 
     // 5. Semak Stesen Almari Fesyen Roblox
     if (this.worldScene.townSquare.isNearWardrobe(playerPos, 2.8)) {
-      this.hud.showPrompt('Tukar Pakaian Roblox! Tekan [E] atau Butang Tindakan 💬', '👕');
+      this.hud.showPrompt('Tukar Pakaian Roblox! Tekan [E] / 💬', '👕');
 
       if (this.inputManager.consumeInteract()) {
         this.customizerModal.show();

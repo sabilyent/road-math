@@ -15,8 +15,8 @@ export class FoodStreet {
       {
         id: 'stall_icecream',
         name: 'Aiskrim Pelangi Pak Mat',
-        item: { name: 'Aiskrim Pelangi', cost: 10, buff: 'speed', emoji: '🍦', desc: 'Larian Laju (+50% Laju)!' },
-        pos: new THREE.Vector3(-18, 0, -8),
+        item: { name: 'Aiskrim Pelangi', cost: 10, health: 15, power: 35, buff: 'speed', emoji: '🍦', desc: '+35 Tenaga ⚡, +15 Darah ❤️ & Larian Laju!' },
+        pos: new THREE.Vector3(-18, 0, -10),
         color: 0xF48FB1, // Pink pastel
         awningColor: 0x80DEEA, // Cyan pastel
         propType: 'icecream'
@@ -24,8 +24,8 @@ export class FoodStreet {
       {
         id: 'stall_donut',
         name: 'Donut Ceria Kak Siti',
-        item: { name: 'Donut Ceria', cost: 15, buff: 'jump', emoji: '🍩', desc: 'Lompatan Super (+50% Tinggi)!' },
-        pos: new THREE.Vector3(-18, 0, 0),
+        item: { name: 'Donut Ceria', cost: 12, health: 25, power: 40, buff: 'jump', emoji: '🍩', desc: '+40 Tenaga ⚡, +25 Darah ❤️ & Lompatan Super!' },
+        pos: new THREE.Vector3(-18, 0, -3),
         color: 0xFFD54F, // Yellow
         awningColor: 0x8D6E63, // Brown chocolate
         propType: 'donut'
@@ -33,11 +33,20 @@ export class FoodStreet {
       {
         id: 'stall_burger',
         name: 'Burger Juara',
-        item: { name: 'Burger Juara', cost: 20, buff: 'sparkle', emoji: '🍔', desc: 'Jejak Bintang Berkilau!' },
-        pos: new THREE.Vector3(-18, 0, 8),
+        item: { name: 'Burger Juara', cost: 16, health: 45, power: 45, buff: 'sparkle', emoji: '🍔', desc: '+45 Darah ❤️, +45 Tenaga ⚡ & Jejak Bintang!' },
+        pos: new THREE.Vector3(-18, 0, 4),
         color: 0xEF5350, // Red
         awningColor: 0xFFFFFF,
         propType: 'burger'
+      },
+      {
+        id: 'stall_drinks',
+        name: 'Air Kelapa & Minuman Segar',
+        item: { name: 'Air Kelapa Segar', cost: 8, health: 25, power: 60, buff: 'energy', emoji: '🥥', desc: '+60 Tenaga ⚡ & +25 Darah ❤️ Segar Semula!' },
+        pos: new THREE.Vector3(-18, 0, 11),
+        color: 0x4CAF50, // Fresh green
+        awningColor: 0xFFEB3B, // Fresh lemon
+        propType: 'drink'
       }
     ];
 
@@ -104,6 +113,26 @@ export class FoodStreet {
         topBun.position.y = 0.25;
 
         propMesh.add(bottomBun, patty, cheese, topBun);
+      } else if (data.propType === 'drink') {
+        propMesh = new THREE.Group();
+        // Cawan / Kelapa bulat
+        const cupGeo = new THREE.CylinderGeometry(0.4, 0.32, 0.75, 16);
+        const cupMat = new THREE.MeshLambertMaterial({ color: 0x4CAF50 });
+        const cup = new THREE.Mesh(cupGeo, cupMat);
+        cup.position.y = 0.35;
+        // Penutup
+        const lidGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.08, 16);
+        const lidMat = new THREE.MeshLambertMaterial({ color: 0xFFEB3B });
+        const lid = new THREE.Mesh(lidGeo, lidMat);
+        lid.position.y = 0.75;
+        // Straw minuman condong
+        const strawGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.6, 8);
+        const strawMat = new THREE.MeshLambertMaterial({ color: 0xFF1744 });
+        const straw = new THREE.Mesh(strawGeo, strawMat);
+        straw.position.set(0.12, 0.95, 0);
+        straw.rotation.z = -0.3;
+
+        propMesh.add(cup, lid, straw);
       }
 
       if (propMesh) {

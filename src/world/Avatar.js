@@ -328,4 +328,16 @@ export class Avatar {
       this.materials.shadow.opacity = 0.28;
     }
   }
+
+  // Kesan kilauan merah apabila terkena gigitan
+  flashHurt() {
+    const origShirt = this.materials.shirt.color.getHex();
+    const origSkin = this.materials.skin.color.getHex();
+    this.materials.shirt.color.setHex(0xFF1744);
+    this.materials.skin.color.setHex(0xFF8A80);
+    setTimeout(() => {
+      this.materials.shirt.color.setHex(origShirt);
+      this.materials.skin.color.setHex(origSkin);
+    }, 280);
+  }
 }

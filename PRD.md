@@ -229,14 +229,43 @@ Versi MVP:
 - Pilihan avatar disimpan dan dimuat semula selepas reload.
 - Jika aset kosmetik gagal dimuatkan, avatar lalai digunakan.
 
-### FR-013 — Tenaga dan item makanan [P1]
-**Penerangan:** Makanan/minuman boleh memulihkan tenaga jika meter tenaga dimasukkan dalam MVP.
+### FR-013 — Sistem Kesihatan (❤️ Health), Tenaga (⚡ Power) dan Makanan/Minuman [P0]
+**Penerangan:** Permainan menyediakan meter Darah (Health) dan Tenaga (Power) yang hidup dan mempengaruhi pergerakan serta kelangsungan hero dalam Math City:
+1. **Darah / Kesihatan (❤️ Health — Maks 100):**
+   - Zombie yang mendekati pemain (< 1.6 unit) akan menyerang/menggigit hero (-15 HP setiap gigitan dengan cooldown 2.4 saat).
+   - Skrin memancarkan kilauan merah (*damage flash vignette*) dan watak berkelip merah berserta audio kesakitan (*hurt SFX*).
+   - Sekiranya Darah habis (0 HP), hero pingsan (*faint defeat*) dan serta-merta muncul semula (*respawn*) di kolam air pancut Town Square dengan kesihatan dan tenaga penuh 100%. Tiada kehilangan syiling atau point.
+2. **Tenaga / Stamina (⚡ Power — Maks 100):**
+   - Berjalan atau berlari di bandar menolak tenaga secara berterusan (~2.2 unit sesaat).
+   - Apabila hero berhenti bergerak, tenaga memulih perlahan-lahan (~1.5 unit sesaat).
+   - Sekiranya Tenaga habis (0⚡), hero mengalami keletihan (*exhaustion*) dan kelajuan larian dikurangkan sebanyak 50% sehingga tenaga diisi semula.
+3. **Gerai Makanan & Minuman di Food Street:**
+   - Pemain boleh membeli pelbagai hidangan untuk memulihkan vitals menggunakan syiling:
+     - 🍦 **Aiskrim Vanila Salji** (5 syiling): +20 ⚡ Tenaga, +10 ❤️ Darah, buff larian laju.
+     - 🍩 **Donut Coklat Pelangi** (6 syiling): +35 ⚡ Tenaga, +15 ❤️ Darah, buff lompatan tinggi.
+     - 🍔 **Burger Keju Ria** (10 syiling): +50 ⚡ Tenaga, +30 ❤️ Darah, mega buff pergerakan.
+     - 🥥 **Air Kelapa & Minuman Segar** (8 syiling): +60 ⚡ Tenaga, +25 ❤️ Darah, pemulihan hidrasi pantas.
+4. **Kolam Air Pancut (Town Square Rest & Heal):**
+   - Berada berhampiran kolam air pancut (< 4.2 unit) memulihkan +10 HP dan +15 Tenaga sesaat secara percuma.
 
 **Kriteria penerimaan**
-- Nilai tenaga mempunyai minimum dan maksimum.
-- Penggunaan item tidak melebihi nilai maksimum.
-- Item ditolak daripada inventori hanya apabila penggunaan sah.
-- Jika tenaga tidak dimasukkan dalam build MVP, kedai masih boleh berfungsi sebagai aktiviti matematik dan item koleksi.
+- HUD memaparkan bar kemajuan visual ❤️ Darah dan ⚡ Tenaga dengan teks peratusan nilai semasa.
+- Bar vitals berkelip amaran (*vital-low-pulse*) apabila nilai jatuh di bawah 25%.
+- Gigitan zombie menolak HP dengan tepat dan mengaktifkan animasi serang zombie.
+- Keletihan memperlahankan watak secara automatik apabila Power = 0.
+- Transaksi makanan dan minuman menambah nilai vitals tanpa melebihi had maksimum 100.
+- Kemajuan vitals disimpan secara automatik dalam simpanan profil pengguna.
+
+### FR-018 — Reka Bentuk UI Responsif Melintang Mobile & Bebas Halangan [P0]
+**Penerangan:** Antara muka pengguna (HUD dan dialog soalan) direka khas untuk skrin melintang telefon pintar (tinggi viewport <= 450px) agar kemas, tidak memotong elemen dan tidak menghalang pandangan aksi permainan:
+1. **Petunjuk Interaksi Langsing (Slim Top Prompt):**
+   - Petunjuk interaksi diposisikan di bahagian atas skrin (`top: 48px - 64px`), berprofil langsing (*slim pill*), dan *pointer-events: none*.
+   - Menghapuskan kotak dialog gergasi di tengah skrin yang menghalang avatar pemain atau zombie.
+2. **Kad Matematik Kompak (Compact Mobile Math Modal):**
+   - Kotak soalan formula matematik, bantuan visual emoji, mesej panduan dan 4 butang pilihan jawapan diskalakan secara kompak pada paparan peranti tinggi rendah (`max-height: 520px`).
+   - Keseluruhan kad matematik muat dengan selesa dalam ruang skrin tanpa terpotong di bahagian atas atau bawah.
+3. **Bar Tindakan HUD Ringkas:**
+   - Ikon butang HUD dan bar profil bersaiz kemas, membolehkan pemain sentiasa melihat persekitaran 3D dengan lapang.
 
 ### FR-014 — Save tempatan [P0]
 **Penerangan:** Simpan kemajuan tanpa server.

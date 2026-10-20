@@ -7,6 +7,10 @@ const createDefaultProfile = (username = 'Hero') => ({
   username: username,
   coins: 50,  // Syiling untuk belanja di kedai makanan & kosmetik
   points: 0,  // Mata skor untuk ranking / leaderboard
+  health: 100, // Darah / Kesihatan (Max: 100)
+  maxHealth: 100,
+  power: 100,  // Tenaga / Stamina (Max: 100)
+  maxPower: 100,
   xp: 0,
   level: 1,
   avatar: {
@@ -173,6 +177,58 @@ class SaveManager {
     this.user.coins = (this.user.coins || 0) + amount;
     this.save();
     return this.user.coins;
+  }
+
+  // Pengurusan Kesihatan (❤️ Health)
+  get health() {
+    if (this.user.health === undefined) this.user.health = 100;
+    return this.user.health;
+  }
+
+  get maxHealth() {
+    return this.user.maxHealth || 100;
+  }
+
+  damageHealth(amount) {
+    if (amount <= 0) return this.health;
+    this.user.health = Math.max(0, this.health - amount);
+    this.save();
+    return this.user.health;
+  }
+
+  restoreHealth(amount) {
+    if (amount <= 0) return this.health;
+    this.user.health = Math.min(this.maxHealth, this.health + amount);
+    this.save();
+    return this.user.health;
+  }
+
+  // Pengurusan Tenaga (⚡ Power / Stamina)
+  get power() {
+    if (this.user.power === undefined) this.user.power = 100;
+    return this.user.power;
+  }
+
+  get maxPower() {
+    return this.user.maxPower || 100;
+  }
+
+  consumePower(amount) {
+    if (amount <= 0) return this.power;
+    this.user.power = Math.max(0, this.power - amount);
+    return this.user.power;
+  }
+
+  restorePower(amount) {
+    if (amount <= 0) return this.power;
+    this.user.power = Math.min(this.maxPower, this.power + amount);
+    return this.user.power;
+  }
+
+  restoreFull() {
+    this.user.health = 100;
+    this.user.power = 100;
+    this.save();
   }
 
   // Belanja Coins
