@@ -144,9 +144,11 @@ class GameApp {
 
   // Pengendali Keputusan Cabaran Matematik
   handleMathResult(isCorrect, question, context) {
-    this.saveManager.recordMathAnswer(question.operation, isCorrect);
+    if (question && question.operation) {
+      this.saveManager.recordMathAnswer(question.operation, isCorrect);
+    }
 
-    if (!isCorrect) return;
+    if (!isCorrect || !context) return;
 
     if (context.type === 'zombie') {
       const zombie = context.target;
