@@ -1,4 +1,4 @@
-const CACHE_NAME = 'road-math-pwa-v4';
+const CACHE_NAME = 'road-math-pwa-v5';
 const CORE_ASSETS = [
   './',
   './index.html',

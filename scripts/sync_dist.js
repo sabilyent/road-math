@@ -46,6 +46,13 @@ if (fs.existsSync('public/icons')) {
   fs.cpSync('public/icons', 'dist/icons', { recursive: true });
 }
 
+if (fs.existsSync('public/three.core.js')) {
+  fs.copyFileSync('public/three.core.js', 'dist/three.core.js');
+}
+if (fs.existsSync('public/three.module.js')) {
+  fs.copyFileSync('public/three.module.js', 'dist/three.module.js');
+}
+
 // 6. Sinkronisasi dist/ ke docs/ untuk sokongan penuh GitHub Pages
 fs.cpSync('dist', 'docs', { recursive: true });
 console.log('Synced dist/ to docs/');
