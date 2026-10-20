@@ -84,9 +84,11 @@ export class MathModal {
       allButtons.forEach((b) => b.disabled = true);
 
       setTimeout(() => {
+        const question = this.currentQuestion;
+        const context = this.contextData;
         this.close();
         if (this.onAnswered) {
-          this.onAnswered(true, this.currentQuestion, this.contextData);
+          this.onAnswered(true, question, context);
         }
       }, 900);
 
