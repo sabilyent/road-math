@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#FFB300" />
+  <meta name="description" content="Road Math (Bijak Math: Math City Adventure) - Permainan 3D pendidikan matematik untuk kanak-kanak ala Roblox" />
+  <title>Road Math: Math City Adventure 🚗🎒</title>
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- Importmap untuk membolehkan pelayar menjalankan ES Modules tanpa build step -->
+
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./public/three.module.js"
+    }
+  }
+  </script>
+  <script type="module" crossorigin src="./assets/index-nIfj9jxy.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BpfBgOYo.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Three.js 3D WebGL Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- HUD (Syiling, Tahap, Butang Cepat) -->
+    <div id="hud-container"></div>
+
+    <!-- Virtual Joystick & Butang Sentuh Mobile -->
+    <div id="touch-controls-container"></div>
+
+    <!-- Modals -->
+    <div id="login-modal-container" class="hidden"></div>
+    <div id="leaderboard-modal-container" class="hidden"></div>
+    <div id="math-modal-container" class="hidden"></div>
+    <div id="shop-modal-container" class="hidden"></div>
+    <div id="customizer-modal-container" class="hidden"></div>
+    <div id="settings-modal-container" class="hidden"></div>
+  </div>
+
+</body>
+</html>

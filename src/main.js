@@ -297,7 +297,9 @@ class GameApp {
   }
 }
 
-// Mulakan aplikasi apabila DOM sedia
-window.addEventListener('DOMContentLoaded', () => {
+// Mulakan aplikasi secara selamat sama ada sebelum atau selepas DOM sedia
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => new GameApp());
+} else {
   new GameApp();
-});
+}

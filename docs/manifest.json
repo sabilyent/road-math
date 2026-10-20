@@ -1,0 +1,17 @@
+{
+  "name": "Road Math: Math City Adventure",
+  "short_name": "RoadMath",
+  "description": "Permainan 3D pengembaraan matematik untuk kanak-kanak",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#4fc3f7",
+  "theme_color": "#ff9800",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

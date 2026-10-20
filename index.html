@@ -9,7 +9,19 @@
   
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./src/style.css" />
+
+  <!-- Importmap untuk membolehkan pelayar menjalankan ES Modules tanpa build step -->
+
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./public/three.module.js"
+    }
+  }
+  </script>
+  <script type="module" crossorigin src="./assets/index-nIfj9jxy.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BpfBgOYo.css">
 </head>
 <body>
   <div id="game-container">
@@ -31,6 +43,5 @@
     <div id="settings-modal-container" class="hidden"></div>
   </div>
 
-  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

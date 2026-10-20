@@ -113,7 +113,7 @@ export class WorldScene {
     }
   }
 
-  update(delta, inputManager, elapsedTime) {
+  update(delta, inputManager, elapsedTime, isAiming = false) {
     // 1. Semak tamat masa buff makanan
     if (this.activeBuffTimer > 0) {
       this.activeBuffTimer -= delta;
