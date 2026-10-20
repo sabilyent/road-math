@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#FFB300" />
+  <meta name="description" content="Road Math (Bijak Math: Math City Adventure) - Permainan 3D pendidikan matematik untuk kanak-kanak ala Roblox" />
+  <title>Road Math: Math City Adventure 🚗🎒</title>
+  
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Road Math" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512.png" />
+
+  <link rel="stylesheet" href="./src/style.css" />
+
+  <!-- Importmap untuk Three.js fallback jika diperlukan -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./public/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="game-container">
+    <!-- Three.js 3D WebGL Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- HUD (Syiling, Tahap, Butang Cepat, Pasang PWA) -->
+    <div id="hud-container"></div>
+
+    <!-- Virtual Joystick & Butang Sentuh Mobile -->
+    <div id="touch-controls-container"></div>
+
+    <!-- Modals -->
+    <div id="login-modal-container" class="hidden"></div>
+    <div id="leaderboard-modal-container" class="hidden"></div>
+    <div id="math-modal-container" class="hidden"></div>
+    <div id="shop-modal-container" class="hidden"></div>
+    <div id="customizer-modal-container" class="hidden"></div>
+    <div id="settings-modal-container" class="hidden"></div>
+
+    <!-- Sekatan Orientasi Landscape (Force Landscape) -->
+    <div id="landscape-barrier" class="landscape-barrier hidden">
+      <div class="barrier-card bounce-in">
+        <div class="barrier-anim-container">
+          <span class="phone-icon-anim">📱</span>
+          <span class="rotate-arrow-anim">🔄</span>
+        </div>
+        <h2 class="barrier-title">Sila Putar Peranti Anda! 🔄</h2>
+        <p class="barrier-desc">
+          Permainan <strong>Road Math</strong> direka khas dalam mod <strong>Melintang (Landscape)</strong> untuk pengalaman kawalan yang terbaik! Sila pusingkan peranti anda.
+        </p>
+        <button id="btn-force-fullscreen" class="btn-fullscreen-landscape">
+          <span>📱</span> Kunci / Skrin Penuh Landscape
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

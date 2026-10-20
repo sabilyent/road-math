@@ -3,6 +3,14 @@ import path from 'path';
 
 console.log('--- Post-Build PWA & Asset Synchronization ---');
 
+// Jika input ialah index.dev.html, namakan semula kepada dist/index.html
+if (fs.existsSync('dist/index.dev.html')) {
+  if (fs.existsSync('dist/index.html')) {
+    fs.unlinkSync('dist/index.html');
+  }
+  fs.renameSync('dist/index.dev.html', 'dist/index.html');
+}
+
 const distHtmlPath = 'dist/index.html';
 if (fs.existsSync(distHtmlPath)) {
   let html = fs.readFileSync(distHtmlPath, 'utf8');
@@ -57,15 +65,21 @@ if (fs.existsSync('public/three.module.js')) {
 fs.cpSync('dist', 'docs', { recursive: true });
 console.log('Synced dist/ to docs/');
 
-// 7. Salin aset ke root untuk sokongan pelayan statik root
+// 7. Salin aset ke root untuk sokongan pelayan statik root (GitHub Pages /)
 if (fs.existsSync('dist/assets')) {
   fs.cpSync('dist/assets', 'assets', { recursive: true });
 }
 if (fs.existsSync('dist/icons')) {
   fs.cpSync('dist/icons', 'icons', { recursive: true });
 }
+fs.copyFileSync('dist/index.html', 'index.html');
 fs.copyFileSync('public/manifest.json', 'manifest.json');
 fs.copyFileSync('public/sw.js', 'sw.js');
 fs.copyFileSync('public/favicon.svg', 'favicon.svg');
 
-console.log('PWA synchronization completed successfully!');
+// 8. Cipta .nojekyll untuk elak GitHub Pages mengabaikan sebarang aset
+fs.writeFileSync('.nojekyll', '', 'utf8');
+fs.writeFileSync('docs/.nojekyll', '', 'utf8');
+fs.writeFileSync('dist/.nojekyll', '', 'utf8');
+
+console.log('PWA synchronization & root production bundle completed successfully!');
