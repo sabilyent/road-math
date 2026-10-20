@@ -2,12 +2,14 @@
   "name": "Road Math: Math City Adventure 🚗🎒",
   "short_name": "Road Math",
   "description": "Permainan 3D Pendidikan Matematik Kanak-Kanak Ala Roblox",
-  "start_url": "./",
+  "id": "./index.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",
   "background_color": "#81D4FA",
   "theme_color": "#FFB300",
+  "prefer_related_applications": false,
   "categories": ["education", "games", "kids"],
   "icons": [
     {
@@ -33,12 +35,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "./favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ]
 }

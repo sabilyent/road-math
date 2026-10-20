@@ -224,11 +224,21 @@ class GameApp {
   // Pendaftaran Service Worker untuk Keupayaan Offline (Luar Talian)
   registerServiceWorker() {
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch((err) => {
-          console.log('SW registration note:', err);
-        });
-      });
+      const doRegister = () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then((reg) => {
+            console.log('Road Math SW registered successfully. Scope:', reg.scope);
+          })
+          .catch((err) => {
+            console.log('SW registration note:', err);
+          });
+      };
+
+      if (document.readyState === 'complete') {
+        doRegister();
+      } else {
+        window.addEventListener('load', doRegister);
+      }
     }
   }
 
