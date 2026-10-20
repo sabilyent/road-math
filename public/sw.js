@@ -1,15 +1,17 @@
-const CACHE_NAME = 'road-math-v1';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'road-math-pwa-v3';
+const CORE_ASSETS = [
   './',
   './index.html',
   './favicon.svg',
-  './manifest.json'
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(CORE_ASSETS);
     }).then(() => self.skipWaiting())
   );
 });
@@ -25,13 +27,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
-  
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cache but update in background
+        // Berikan daripada cache dengan segera, kemaskini di latar belakang
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
@@ -39,8 +40,9 @@ self.addEventListener('fetch', (event) => {
         }).catch(() => {});
         return cachedResponse;
       }
+
       return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+        if (!response || response.status !== 200) {
           return response;
         }
         const responseToCache = response.clone();
@@ -48,9 +50,12 @@ self.addEventListener('fetch', (event) => {
           cache.put(event.request, responseToCache);
         });
         return response;
+      }).catch(() => {
+        // Fallback luar talian jika fail tidak ditemui
+        if (event.request.destination === 'document') {
+          return caches.match('./index.html');
+        }
       });
-    }).catch(() => {
-      return caches.match('./index.html');
     })
   );
 });

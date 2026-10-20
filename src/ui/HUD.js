@@ -47,8 +47,9 @@ export class HUD {
           </div>
         </div>
 
-        <!-- Butang Tindakan Cepat (Ranking, Almari, Tetapan, Audio) -->
+        <!-- Butang Tindakan Cepat (Ranking, Almari, Pasang PWA, Tetapan, Audio) -->
         <div class="hud-actions-pill">
+          <button id="btn-install-pwa" class="hud-btn hud-btn-install hidden" title="Pasang Permainan Sebagai App (PWA)">📲</button>
           <button id="btn-open-leaderboard" class="hud-btn hud-btn-leaderboard" title="Papan Ranking Math City">🏆</button>
           <button id="btn-open-wardrobe" class="hud-btn" title="Tukar Pakaian Roblox">👕</button>
           <button id="btn-toggle-music" class="hud-btn" title="Muzik BGM">🎵</button>
@@ -158,5 +159,21 @@ export class HUD {
   hideBuff() {
     const buff = document.getElementById('hud-buff');
     buff.classList.add('hidden');
+  }
+
+  showInstallButton(handler) {
+    const btn = document.getElementById('btn-install-pwa');
+    if (btn) {
+      btn.classList.remove('hidden');
+      btn.onclick = () => {
+        this.audioManager.playCoin();
+        handler();
+      };
+    }
+  }
+
+  hideInstallButton() {
+    const btn = document.getElementById('btn-install-pwa');
+    if (btn) btn.classList.add('hidden');
   }
 }

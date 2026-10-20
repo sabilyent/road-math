@@ -39,8 +39,8 @@ Bukan sekadar kuiz di atas kertas, **Road Math** menjadikan matematik sebagai pe
 
 ## ✨ Ciri-Ciri Utama
 
-| Ciri | Penerangan |
-| :--- | :--- |
+| 📱 **PWA & Pasang Jadi Apps** | Boleh dipasang (*Installable App*) di telefon pintar (Android/iOS) dan desktop (Chrome/Edge/Safari) dengan ikon khas serta sokongan luar talian (*Offline*). |
+| 🔄 **Paksa Mod Melintang (Force Landscape)** | Dilengkapi sekatan orientasi pintar dengan animasi putaran peranti untuk menjamin kawalan terbaik kanak-kanak tanpa herotan skrin tegak. |
 | 🏙️ **Math City 3D** | Bandar 3D *low-poly* ceria merangkumi **Town Square**, kolam air pancut dengan syiling gergasi, **Food Street**, dan laluan berturap. |
 | 🧟 **Zombie Berkeliaran** | 8 watak zombie kartun waddle comel yang berkeliaran bebas di serata bandar mencari lawan matematik. |
 | 🎯 **Auto-Aim & Click-to-Aim** | Pistol automatik mengunci sasaran terdekat dengan reticle 🎯, atau klik terus pada zombie dalam dunia 3D untuk memulakan cabaran. |
@@ -50,6 +50,31 @@ Bukan sekadar kuiz di atas kertas, **Road Math** menjadikan matematik sebagai pe
 | 👕 **Almari Fesyen Roblox** | Ubah suai warna baju, seluar, tona kulit dan aksesori topi 3D (Topi Kipas Berputar, Mahkota Diraja 👑, Topi Parti 🥳, Telinga Kucing 🐱). |
 | 🍦 **Kedai Makanan & Kira Baki** | Gerai Aiskrim, Donut dan Burger yang melatih pengiraan baki wang tolak serta memberikan buff pergerakan laju. |
 | 💾 **Offline-Ready PWA** | Dilengkapi *Service Worker* dan *Web Manifest* untuk dimainkan tanpa sambungan internet. |
+
+---
+
+## 📱 Panduan Pemasangan Sebagai Aplikasi (PWA Install)
+
+**Road Math** boleh dipasang terus ke skrin utama telefon atau komputer anda seperti aplikasi *native* tanpa perlu memuat turun fail APK atau melalui App Store:
+
+### 🤖 Android & Chrome / Edge (Desktop & Mobile)
+1. Buka pautan [https://sabilyent.github.io/road-math](https://sabilyent.github.io/road-math) di pelayar Chrome atau Edge.
+2. Tekan butang hijau **📲 Pasang** yang terapung pada bar atas permainan (HUD), **ATAU** klik menu tiga titik pelayar (⋮) -> pilih **"Install app"** / **"Pasang aplikasi"**.
+3. Ikon *Road Math* akan muncul di skrin utama (Home Screen) telefon atau desktop anda.
+
+### 🍏 Apple iOS (iPhone & iPad Safari)
+1. Buka laman permainan di **Safari**.
+2. Tekan butang **Kongsi (Share)** (ikon kotak dengan anak panah ke atas ⬆️).
+3. Skrol ke bawah dan pilih **"Add to Home Screen"** (*Tambah ke Skrin Utama*).
+4. Tekan **"Add"**. Road Math kini boleh dibuka skrin penuh tanpa bar URL!
+
+---
+
+## 🔄 Mod Melintang (Forced Landscape)
+
+Permainan ini mengunci dan menguatkuasakan paparan **Melintang (Landscape)** secara pintar:
+- Jika pemain membuka permainan semasa peranti berada dalam mod menegak (Portrait), paparan sekatan beranimasi akan muncul meminta pemain memutarkan peranti.
+- Terdapat juga butang **"Kunci / Skrin Penuh Landscape"** yang mengaktifkan *Fullscreen API* dan *Screen Orientation Lock* untuk peranti yang menyokongnya.
 
 ---
 

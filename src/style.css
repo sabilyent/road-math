@@ -1204,3 +1204,117 @@ canvas {
   box-shadow: 0 2px 0 #E65100;
 }
 
+/* ==========================================================================
+   FORCE LANDSCAPE BARRIER OVERLAY & PWA INSTALL BUTTON
+   ========================================================================== */
+
+.hud-btn-install {
+  background: linear-gradient(135deg, #00E676, #69F0AE) !important;
+  border-color: #00C853 !important;
+  color: #1B5E20 !important;
+  box-shadow: 0 4px 12px rgba(0, 230, 118, 0.4), 0 3px 0 #00C853 !important;
+  animation: pwaPulse 2s infinite ease-in-out;
+}
+
+@keyframes pwaPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+.landscape-barrier {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #0288D1, #01579B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 24px;
+}
+
+/* Pada mod Portrait, pamerkan sekatan orientasi secara automatik */
+@media (orientation: portrait) {
+  .landscape-barrier {
+    display: flex !important;
+  }
+}
+
+.barrier-card {
+  background: #FFFFFF;
+  border-radius: 28px;
+  max-width: 440px;
+  width: 100%;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35), 0 8px 0 #0277BD;
+  border: 4px solid #E1F5FE;
+}
+
+.barrier-anim-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.phone-icon-anim {
+  font-size: 3.8rem;
+  animation: phoneRotate 2.4s infinite ease-in-out;
+}
+
+.rotate-arrow-anim {
+  font-size: 2.4rem;
+  animation: spinSlow 3s infinite linear;
+}
+
+@keyframes phoneRotate {
+  0%, 20% { transform: rotate(0deg); }
+  50%, 70% { transform: rotate(-90deg) scale(1.1); }
+  90%, 100% { transform: rotate(0deg); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.barrier-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #0277BD;
+  margin-bottom: 12px;
+}
+
+.barrier-desc {
+  font-size: 1.05rem;
+  color: #455A64;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.btn-fullscreen-landscape {
+  background: linear-gradient(135deg, #FB8C00, #FFA726);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #E65100, 0 8px 18px rgba(230, 81, 0, 0.35);
+  font-family: var(--font-family);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.1s ease;
+}
+
+.btn-fullscreen-landscape:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #E65100;
+}
+

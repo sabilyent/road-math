@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"const fs=require('fs'); fs.cpSync('dist/assets', 'assets', {recursive:true}); fs.copyFileSync('dist/index.html', 'index.html'); fs.cpSync('dist', 'docs', {recursive:true}); console.log('Synced dist to root and docs');\"",
+    "build": "vite build && node scripts/sync_dist.js",
     "preview": "vite preview"
   },
   "repository": {

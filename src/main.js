@@ -32,10 +32,13 @@ class GameApp {
     // 4. Pengesanan Klik / Tap Terus ke Zombie (Raycast Click-to-Aim)
     this.setupZombieClickTargeting();
 
-    // 5. Pasang Service Worker untuk Sokongan Luar Talian (Offline / PWA)
-    this.registerServiceWorker();
+    // 5. Pasang Service Worker & Prompter PWA
+    this.setupPWA();
 
-    // 6. Mulakan Gelung Permainan (Game Loop)
+    // 6. Penguatkuasaan Mod Melintang (Force Landscape Orientation)
+    this.setupLandscapeOrientation();
+
+    // 7. Mulakan Gelung Permainan (Game Loop)
     this.lastTime = performance.now();
     this.elapsedTime = 0;
 
@@ -189,13 +192,98 @@ class GameApp {
     }, 18000);
   }
 
-  // Pendaftaran Service Worker
+  // Konfigurasi PWA & Pengesanan Pemasangan (Install Prompt)
+  setupPWA() {
+    this.registerServiceWorker();
+
+    this.deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Halang pelayar daripada memaparkan default banner mini serta-merta
+      e.preventDefault();
+      this.deferredInstallPrompt = e;
+      // Paparkan butang pasang PWA di HUD
+      this.hud.showInstallButton(async () => {
+        if (!this.deferredInstallPrompt) return;
+        this.deferredInstallPrompt.prompt();
+        const { outcome } = await this.deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          this.hud.showToast('🚀 Pemasangan Road Math sedang dimulakan...');
+        }
+        this.deferredInstallPrompt = null;
+        this.hud.hideInstallButton();
+      });
+    });
+
+    window.addEventListener('appinstalled', () => {
+      this.deferredInstallPrompt = null;
+      this.hud.hideInstallButton();
+      this.hud.showToast('🎉 Aplikasi Road Math berjaya dipasang pada peranti!');
+    });
+  }
+
+  // Pendaftaran Service Worker untuk Keupayaan Offline (Luar Talian)
   registerServiceWorker() {
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch((err) => {
           console.log('SW registration note:', err);
         });
+      });
+    }
+  }
+
+  // Penguatkuasaan Orientasi Skrin Melintang (Force Landscape Mode)
+  setupLandscapeOrientation() {
+    const barrier = document.getElementById('landscape-barrier');
+    const btnFullscreen = document.getElementById('btn-force-fullscreen');
+
+    const updateOrientationState = () => {
+      // Skrin dianggap portrait jika ketinggian lebih besar daripada kelebaran
+      const isPortrait = window.innerHeight > window.innerWidth;
+      if (isPortrait) {
+        if (barrier) barrier.classList.remove('hidden');
+      } else {
+        if (barrier) barrier.classList.add('hidden');
+      }
+    };
+
+    // Jalankan semakan semasa permulaan
+    updateOrientationState();
+
+    // Pantau perubahan saiz viewport dan putaran skrin peranti
+    window.addEventListener('resize', updateOrientationState);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateOrientationState, 150);
+    });
+
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', updateOrientationState);
+    }
+
+    // Butang untuk memohon Skrin Penuh (Fullscreen) & Kunci Skrin Landscape
+    if (btnFullscreen) {
+      btnFullscreen.addEventListener('click', async () => {
+        this.audio.playCoin();
+        try {
+          const docEl = document.documentElement;
+          if (docEl.requestFullscreen) {
+            await docEl.requestFullscreen();
+          } else if (docEl.webkitRequestFullscreen) {
+            await docEl.webkitRequestFullscreen();
+          }
+        } catch (err) {
+          console.log('Fullscreen request note:', err);
+        }
+
+        try {
+          if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape');
+          }
+        } catch (err) {
+          console.log('Screen orientation lock note:', err);
+        }
+
+        setTimeout(updateOrientationState, 200);
       });
     }
   }
